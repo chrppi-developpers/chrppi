@@ -1,0 +1,1 @@
+- Load BUILD_TYPE from app/.env in app/conan/profile.txt
