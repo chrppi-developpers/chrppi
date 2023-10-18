@@ -10,6 +10,7 @@ This repository is hosted on [Github](https://github.com/chrppi-developpers/chrp
 
 ```bash
 ssh -p 2019 viallard@leria-etud.univ-angers.fr
+kvm.create
 kvm.start
 kvm.connect
 git clone https://github.com/chrppi-developpers/chrppi
