@@ -9,7 +9,6 @@ cd "$(dirname "$0")"
 source .env
 
 rm -rf build
-./conan/build.sh
 cd build
 cmake -D CMAKE_BUILD_TYPE=${BUILD_TYPE} ..
-make
+cmake --build .
