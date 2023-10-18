@@ -1,1 +1,0 @@
-. "/home/app/backend/build/Debug/generators/deactivate_conanrunenv-debug-x86_64.sh"

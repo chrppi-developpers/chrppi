@@ -1,3 +1,0 @@
-/home/app/backend/build/CMakeFiles/chrppi.dir
-/home/app/backend/build/CMakeFiles/edit_cache.dir
-/home/app/backend/build/CMakeFiles/rebuild_cache.dir
