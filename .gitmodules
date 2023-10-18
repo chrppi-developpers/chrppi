@@ -1,0 +1,3 @@
+[submodule "app/source/include/cling"]
+	path = app/source/include/cling
+	url = https://github.com/root-project/cling.git

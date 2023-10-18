@@ -37,6 +37,7 @@ endforeach()
 add_executable(${PROJECT_NAME}
     source/main.cpp
     source/controllers/Index.cpp
+    source/include/cling/lib/Interpreter/Interpreter.cpp
     ${VIEWS_SRC}
 )
 
