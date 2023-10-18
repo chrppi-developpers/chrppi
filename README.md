@@ -12,6 +12,7 @@ This repository is hosted on [Github](https://github.com/chrppi-developpers/chrp
 ssh -p 2019 viallard@leria-etud.univ-angers.fr
 kvm.create
 kvm.start
+ssh-keygen -f "/home/viallard/.ssh/known_hosts" -R "etud-kvm-viallard"
 kvm.connect
 git clone https://github.com/chrppi-developpers/chrppi
 cd chrppi/env
