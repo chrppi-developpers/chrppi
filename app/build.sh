@@ -9,6 +9,7 @@ cd "$(dirname "$0")"
 source .env
 
 rm -rf build
+mkdir build
 cd build
 cmake -D CMAKE_BUILD_TYPE=${BUILD_TYPE} ..
 cmake --build .
