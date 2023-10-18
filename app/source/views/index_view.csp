@@ -1,24 +1,45 @@
 <!DOCTYPE html>
 <html>
-<%c++
-	auto name=@@.get<std::string>("name");
-	bool nameIsEmpty = name == "";
-	if (nameIsEmpty)
-		name = "anonymous";
-	auto message = "Hello, " + name + " from a CSP template";
-%>
-<head>
-	<meta charset="UTF-8">
-	<title>[[ name ]]</title>
-</head>
-<body>
-	<%c++ $$<<message; %>
-	<%c++
-	if (nameIsEmpty)
-	{
-		$$ << "<br>"
-			<< "You can revisit the same page and append ?name=<i>your_name</i> to change the name";
-	}
-	%>
-</body>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>CHRPPI</title>
+		<link rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+		<link rel="stylesheet" 
+        href="css/main.css">
+		
+
+		<script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+         <link rel="stylesheet" href="css/debug.css">
+	</head>
+	<body>
+		<section class="hero has-background-danger ">
+            <div class="hero-body">
+                <div class="container center notification is-danger">
+                    <p class="is-size-10">CHRPPI</p>
+                </div>
+            </div>
+        </section>
+
+		<section class="section ">
+			
+			<div class="columns is-multiline  is-centered">
+				<div class="column is-one-third">
+					<button class="button ">AutoCompilation</button>
+				</div>
+				<div class="column is-one-third">
+					<button class="button ">Persistance</button>
+				</div>
+				<div class="column is-one-third">
+					<button class="button">Tracing</button>
+				</div>
+			</div>
+
+			<p class="is-size-10">texte a compiler</p>
+
+		</section>
+
+	</body>
+
 </html>
