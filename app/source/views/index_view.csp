@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<%inc#include "../source/utils/utils.hh" %>
+
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -6,40 +8,144 @@
 		<title>CHRPPI</title>
 		<link rel="stylesheet" 
         href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
-		<link rel="stylesheet" 
-        href="css/main.css">
-		
-
 		<script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
-         <link rel="stylesheet" href="css/debug.css">
-	</head>
-	<body>
-		<section class="hero has-background-danger ">
-            <div class="hero-body">
-                <div class="container center notification is-danger">
-                    <p class="is-size-10">CHRPPI</p>
-                </div>
-            </div>
-        </section>
+        <!--<link rel="stylesheet" href="css/debug.css">-->
+		<link rel="stylesheet" href="css/main.css">
+		<script type="text/javascript" src="scripts/main.js" defer></script>		
+<style>
+			.grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+}
 
-		<section class="section ">
-			
-			<div class="columns is-multiline  is-centered">
-				<div class="column is-one-third">
-					<button class="button ">AutoCompilation</button>
-				</div>
-				<div class="column is-one-third">
-					<button class="button ">Persistance</button>
-				</div>
-				<div class="column is-one-third">
-					<button class="button">Tracing</button>
+.grid * { grid-column: 2 / 3; };
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+};
+.block:not(:last-child) {
+  margin-bottom: 1.5rem;
+};
+
+
+.flexContainer {
+    display: flex;
+};
+
+.inputField {
+    flex: 1;
+};
+		</style>
+	</head>
+
+
+
+	<body>
+		
+		<section class="hero has-background-danger ">
+            <div>
+				<div class="columns is-multiline  is-centered">
+					<div class="column is-one-two ">
+						<div class="hero-body">
+            			    <div class="container center  is-info">
+            			        <p class="title">chrppi</p>
+            			    </div>
+            			</div>
+					</div>
+					<div class="column is-one-two center">
+						<div class="hero-body">
+            			    <form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="?<%c++ $$<<utils::key_type_requete;%>=<%c++ $$<<utils::key_load_exemple;%>" method="post">
+								<div class="select is-rounded">
+									<select id="<%c++ $$<<utils::key_id_select_exemple;%>" name="<%c++ $$<<utils::key_id_select_exemple;%>">
+										<%c++
+										std::vector<std::string> filename_exemples=@@.get<std::vector<std::string>>(utils::key_Exemples_filenames);
+										for(std::string const&file:filename_exemples)
+										{
+											$$ << "<option value=\"" <<file <<"\" >" << file <<"</option>"; 
+										}
+										%>
+									</select>
+								</div>
+								<input type="submit"  class="button is-info" value="Load Exemple" />
+								
+							</form>
+            			</div>
+					</div>
 				</div>
 			</div>
-
-			<p class="is-size-10">texte a compiler</p>
-
+        </section>
+		<section class="section">
+			
+			<div class="columns is-multiline  is-centered">
+				<div class="column is-one-two " >
+					<div class="columns is-multiline  is-centered">
+						<div class="column is-one-third center" >
+							<button class="button">AutoCompilation</button>
+						</div>
+						<div class="column is-one-third center">
+							<button class="button ">Persistance</button>
+						</div>
+						<div class="column is-one-third center">
+							<button class="button">Tracing</button>
+						</div>
+					</div>
+					<textarea form="<%c++ $$<< utils::key_id_form_contenue;%>" class="textarea is-primary " placeholder="CHR CODE" rows="20"><%c++$$<< @@.get<std::string>(utils::key_content_exemple);%></textarea>
+				</div>
+				<div class="column is-one-two " >
+					<div class="block">
+						<form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="?<%c++ $$<<utils::key_type_requete;%>=<%c++ $$<<utils::key_Add_constrain;%>" method="post">
+							<div class="block">
+								<p class="is-size-10">ADD Constraint</p> 
+								<div class="field has-addons">
+									<div class="control is-expanded">
+										<input class="input is-danger" name="<%c++ $$<<utils::key_Get_constrain;%>" size="20" type="text"  placeholder="Add Constraint">
+									</div>
+									<div class="control">
+										<input type="submit"   class="button is-danger" value="Add" />
+									</div>
+								</div>							  
+							</div>
+						</form>
+						<form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="?<%c++ $$<<utils::key_type_requete;%>=<%c++ $$<<utils::key_Remove_constrain;%>" method="post">
+							<div class="block">
+								<p class="is-size-10">Remove Constraint</p> 
+								<div class="field has-addons">
+									<div class="control is-expanded">
+										<input class="input is-danger" size="20" type="text" name="<%c++ $$<<utils::key_Get_constrain;%>"  placeholder="Remove Constraint">
+									</div>
+									<div class="control">
+										<input type="submit"  class="button is-danger" value="Remove" />
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="block">
+						<div class="block">
+							<div class="block">
+								<p class="is-size-10">Constraint Store</p>
+							</div>
+							<div class="block">
+								<form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="?<%c++ $$<<utils::key_type_requete;%>=<%c++ $$<<utils::key_Clear_constrain;%>" method="post">
+									<input type="submit"  class="button is-danger" value="Clear" />
+								</form>
+							</div>
+						</div>
+						<div class="block">
+							<table class="table is-fullwidth">
+								<thead>
+								  <tr>
+									<th>ID</abbr></th>
+									<th>Constraint</th>
+								  </tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
 		</section>
-
 	</body>
-
 </html>

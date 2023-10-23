@@ -1,7 +1,0 @@
-@import '../../../bulma/css/bulma.css';
-/*! debug.css | MIT License | zaydek.github.com/debug.css */
-.center{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-};

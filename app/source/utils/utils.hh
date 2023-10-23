@@ -19,7 +19,9 @@ namespace utils{
     const std::string key_id_select_exemple("exemple id");
     const std::string key_load_exemple("load exemple");
     const std::string key_content_exemple("content exemple");
-
+    const std::string key_id_form_contenue("form content");
+    
+//add the view of the index.html connect the différent form with the controller and add html session
     /*
     =============================CONFIGURATION DROGON======================================
     */
