@@ -22,4 +22,5 @@ class Index:
   void detection_exemples(const drogon::HttpRequestPtr &req);
   void chargement_exemples(const drogon::HttpRequestPtr &req,std::string  const&filename);
   void Session_to_data(const drogon::HttpRequestPtr &req,drogon::HttpViewData &data);
+  void ajoute_une_erreur(drogon::HttpViewData &data,std::string error);
 };

@@ -1,0 +1,1 @@
+. "/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/Merge_github/chrppi/app/build/build/Debug/generators/conanrunenv-debug-x86_64.sh"

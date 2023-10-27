@@ -20,6 +20,19 @@ namespace utils{
     const std::string key_load_exemple("load exemple");
     const std::string key_content_exemple("content exemple");
     const std::string key_id_form_contenue("form content");
+    const std::string key_id_button_variable_store("variable store");
+    const std::string key_champs_variable_track("track variable");
+    const std::string key_champs_variable_track_button("track variable button");
+    const std::string name_champs_variable_track_valeur_mutable("track variable mutable");
+    const std::string id_value_variable_mutable("mutable id");
+    const std::string id_value_variable_mutable_checkbox("mutable checkbox id");
+    const std::string name_value_variable_mutable_checkbox("mutable checkbox name");
+
+    /*
+    =============================Data Key======================================
+    */
+    const std::string id_erreur("erreur");
+    
     
 //add the view of the index.html connect the différent form with the controller and add html session
     /*
@@ -29,5 +42,10 @@ namespace utils{
     const std::string ip("0.0.0.0");
     const uint16_t port(8000);
     const int timeout_session(500000);
+    /*
+    =============================ERROR======================================
+    */
+    const std::string erreur_mutable("Variable mutable but no value given");
+    const std::string erreur_track_variable("Want to track variable but no name given");
 
 };
