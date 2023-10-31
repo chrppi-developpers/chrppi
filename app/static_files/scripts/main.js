@@ -29,17 +29,16 @@ document.getElementById(id_value_variable_semie_instancier_checkbox).addEventLis
   });
 
   document.getElementById(id_load_session).addEventListener("click",function(e){
-    const
-	form = new FormData();
-    console.log(document.getElementById(id_session_file).files[0]);
-    form.append("file",document.getElementById(id_session_file).files[0] );
-    fetch("", {
-	method: "POST",
-	body: form,
-	headers: {
-		"Content-Type": "multipart/form-data",
-	},
-    });
+            var fileObj = document.getElementById(id_session_file).files[0]; // js get file object
+            var url =  "/download_file"; 
+
+            var form = new FormData(); // FormData object
+            form.append("file", fileObj); // File object
+
+            xhr = new XMLHttpRequest();  // XMLHttpRequest object
+            xhr.open("post", url, true); //post
+
+            xhr.send(form); 
   })
 
   

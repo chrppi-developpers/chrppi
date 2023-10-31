@@ -37,8 +37,10 @@ endforeach()
 add_executable(${PROJECT_NAME}
     source/main.cpp
     source/controllers/Index.cpp
+    source/controllers/Download.cpp
     ${VIEWS_SRC}
 )
+
 
 # Link Drogon to the executable
 find_package(Drogon CONFIG REQUIRED)

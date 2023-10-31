@@ -27,24 +27,7 @@ void Index::asyncHandleHttpRequest
 
 void Index::traitement_Get_Post(drogon::HttpViewData &data,const drogon::HttpRequestPtr &req)
 {
-    drogon::MultiPartParser parseur;
-    if(parseur.parse(req))
-    {
-        std::cout << "on a parse le bordel" << std::endl;
-        std::cout << "file size  " <<parseur.getFiles().size() << std::endl;
-        if(!parseur.getFiles().empty() &&parseur.getFiles()[0].fileLength()!=0)
-        {
-            std::cout << "on parse le fichier" << std::endl;
-            std::cout << parseur.getFiles().at(0).fileContent() << std::endl;
-
-        }
-        for(auto key :parseur.getParameters())
-        {
-            std::cout << key.first << " -> " << key.second << std::endl;
-        }
-    }
-
-    
+    std::cout << req->session()->sessionId() << std::endl;
     if(!req->getParameter(utils::key_Add_constrain).empty())
     {
         //traitement add un contrainte

@@ -129,6 +129,30 @@ chrppi/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/build
 .PHONY : chrppi/fast
 
+FileUpload.o: FileUpload.cc.o
+.PHONY : FileUpload.o
+
+# target to build an object file
+FileUpload.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/FileUpload.cc.o
+.PHONY : FileUpload.cc.o
+
+FileUpload.i: FileUpload.cc.i
+.PHONY : FileUpload.i
+
+# target to preprocess a source file
+FileUpload.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/FileUpload.cc.i
+.PHONY : FileUpload.cc.i
+
+FileUpload.s: FileUpload.cc.s
+.PHONY : FileUpload.s
+
+# target to generate assembly for a file
+FileUpload.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/FileUpload.cc.s
+.PHONY : FileUpload.cc.s
+
 index_exmple.o: index_exmple.cc.o
 .PHONY : index_exmple.o
 
@@ -176,6 +200,30 @@ index_view.s: index_view.cc.s
 index_view.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/index_view.cc.s
 .PHONY : index_view.cc.s
+
+source/controllers/Download.o: source/controllers/Download.cpp.o
+.PHONY : source/controllers/Download.o
+
+# target to build an object file
+source/controllers/Download.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/source/controllers/Download.cpp.o
+.PHONY : source/controllers/Download.cpp.o
+
+source/controllers/Download.i: source/controllers/Download.cpp.i
+.PHONY : source/controllers/Download.i
+
+# target to preprocess a source file
+source/controllers/Download.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/source/controllers/Download.cpp.i
+.PHONY : source/controllers/Download.cpp.i
+
+source/controllers/Download.s: source/controllers/Download.cpp.s
+.PHONY : source/controllers/Download.s
+
+# target to generate assembly for a file
+source/controllers/Download.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chrppi.dir/build.make CMakeFiles/chrppi.dir/source/controllers/Download.cpp.s
+.PHONY : source/controllers/Download.cpp.s
 
 source/controllers/Index.o: source/controllers/Index.cpp.o
 .PHONY : source/controllers/Index.o
@@ -234,12 +282,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... chrppi"
+	@echo "... FileUpload.o"
+	@echo "... FileUpload.i"
+	@echo "... FileUpload.s"
 	@echo "... index_exmple.o"
 	@echo "... index_exmple.i"
 	@echo "... index_exmple.s"
 	@echo "... index_view.o"
 	@echo "... index_view.i"
 	@echo "... index_view.s"
+	@echo "... source/controllers/Download.o"
+	@echo "... source/controllers/Download.i"
+	@echo "... source/controllers/Download.s"
 	@echo "... source/controllers/Index.o"
 	@echo "... source/controllers/Index.i"
 	@echo "... source/controllers/Index.s"
