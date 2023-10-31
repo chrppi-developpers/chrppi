@@ -27,6 +27,15 @@ namespace utils{
     const std::string id_value_variable_mutable("mutable id");
     const std::string id_value_variable_mutable_checkbox("mutable checkbox id");
     const std::string name_value_variable_mutable_checkbox("mutable checkbox name");
+    const std::string name_file_session("name file session");
+    const std::string name_load_session("name load session");
+    const std::string id_load_session("id load session");
+    const std::string id_session_filename("id session filename");
+    const std::string id_session_file("id session file");
+    const std::string id_form_file("id form file");
+    
+    
+    
 
     /*
     =============================Data Key======================================

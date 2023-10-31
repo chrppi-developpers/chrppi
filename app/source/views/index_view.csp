@@ -1,6 +1,5 @@
-<!DOCTYPE html>
 <%inc#include "../source/utils/utils.hh" %>
-
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -43,20 +42,42 @@
 
 
 	<body>
+		<div>
+			<form  id="<%c++ $$<< utils::id_form_file;%>" action="" method="post" enctype="multipart/form-data">
+				<div class="field has-addons">
+					<div class="file">
+						<label class="file-label">
+						  <input class="file-input" type="file" name="<%c++ $$<<utils::name_file_session; %>" id="<%c++ $$<<utils::id_session_file; %>">
+						  <span class="file-cta">
+							<span class="file-icon">
+							  <i class="fas fa-upload"></i>
+							</span>
+							<span class="file-label">
+							  Choose a file…
+							</span>
+						  </span>
+						  <span class="file-name" id="<%c++ $$<<utils::id_session_filename; %>">
+							Session file to load
+						  </span>
+						</label>
+					</div>
+					<input type="button" id="<%c++ $$<< utils::id_load_session;%>"  name="<%c++ $$ <<utils::name_load_session;%>"  class="button is-info" value="load session" />
+
+				</div>
+			</form>
+		</div>
 		<form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="" method="post">		
 			<section class="hero has-background-danger ">
-        	    <div>
+        	    <div class="hero-body">
 					<div class="columns is-multiline  is-centered">
-						<div class="column is-one-two ">
-							<div class="hero-body">
-        	    			    <div class="container center  is-info">
-        	    			        <p class="title">chrppi</p>
-        	    			    </div>
+						<div class="column is-one-three ">
+        	    			<div class=" center  is-info">
+        	    			    <p class="title">chrppi</p>
         	    			</div>
 						</div>
-						<div class="column is-one-two center">
-							<div class="hero-body">
-        	    			    <div class="select is-rounded">
+						<div class="column is-one-three center">
+							<div class="field has-addons">
+        	    				<div class="select">
 									<select id="<%c++ $$<<utils::key_id_select_exemple;%>" name="<%c++ $$<<utils::key_id_select_exemple;%>">
 										<%c++
 										std::vector<std::string> filename_exemples=@@.get<std::vector<std::string>>(utils::key_Exemples_filenames);
@@ -68,7 +89,10 @@
 									</select>
 								</div>
 								<input type="submit" name="<%c++ $$ <<utils::key_load_exemple;%>"  class="button is-info" value="Load Exemple" />	
-        	    			</div>
+							</div>
+						</div>
+						<div class="column is-one-three center">
+							
 						</div>
 					</div>
 				</div>
@@ -133,7 +157,7 @@
 									<table class="table is-fullwidth">
 										<thead>
 										  <tr>
-											<th>ID</abbr></th>
+											<th>ID</th>
 											<th>Constraint</th>
 										  </tr>
 										</thead>
@@ -179,7 +203,7 @@
 									<table class="table is-fullwidth">
 										<thead>
 										  <tr>
-											<th>Variable</abbr></th>
+											<th>Variable</th>
 											<th>Value</th>
 										  </tr>
 										</thead>

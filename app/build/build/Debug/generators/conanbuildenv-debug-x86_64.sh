@@ -1,4 +1,4 @@
-script_folder="/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/Merge_github/chrppi/app/build/build/Debug/generators"
+script_folder="/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/Github/chrppi/app/build/build/Debug/generators"
 echo "echo Restoring environment" > "$script_folder/../../../build/Debug/generators/deactivate_conanbuildenv-debug-x86_64.sh"
 for v in 
 do

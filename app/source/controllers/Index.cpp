@@ -4,6 +4,7 @@
 #include"../utils/utils.hh"
 #include<vector>
 #include<fstream>
+
 void Index::asyncHandleHttpRequest
 (
     const drogon::HttpRequestPtr &req,
@@ -26,6 +27,24 @@ void Index::asyncHandleHttpRequest
 
 void Index::traitement_Get_Post(drogon::HttpViewData &data,const drogon::HttpRequestPtr &req)
 {
+    drogon::MultiPartParser parseur;
+    if(parseur.parse(req))
+    {
+        std::cout << "on a parse le bordel" << std::endl;
+        std::cout << "file size  " <<parseur.getFiles().size() << std::endl;
+        if(!parseur.getFiles().empty() &&parseur.getFiles()[0].fileLength()!=0)
+        {
+            std::cout << "on parse le fichier" << std::endl;
+            std::cout << parseur.getFiles().at(0).fileContent() << std::endl;
+
+        }
+        for(auto key :parseur.getParameters())
+        {
+            std::cout << key.first << " -> " << key.second << std::endl;
+        }
+    }
+
+    
     if(!req->getParameter(utils::key_Add_constrain).empty())
     {
         //traitement add un contrainte
@@ -69,15 +88,17 @@ void Index::traitement_Get_Post(drogon::HttpViewData &data,const drogon::HttpReq
         
         
     }
+    
     if(!req->getParameter(utils::key_id_button_variable_store).empty())
     {
         //clear the variable store
         std::cout << "clear the variable store "<< std::endl;
     }
-
-
-
-
+    if(!req->getParameter(utils::name_load_session).empty())
+    {
+        //clear the variable store
+        std::cout << "load a session "<< std::endl;
+    }
 }
 
 void Index::detection_exemples(const drogon::HttpRequestPtr &req)
@@ -110,7 +131,6 @@ void Index::chargement_exemples(const drogon::HttpRequestPtr &req,std::string  c
 
 void Index::Session_to_data(const drogon::HttpRequestPtr &req,drogon::HttpViewData &data)
 {
-    
     data[utils::key_content_exemple]= req->session()->get<std::string>(utils::key_content_exemple);
     data[utils::key_Exemples_filenames]= req->session()->get<std::vector<std::string>>(utils::key_Exemples_filenames);
 
@@ -122,3 +142,4 @@ void Index::ajoute_une_erreur(drogon::HttpViewData &data,std::string error)
     errors.push_back(error);
     data[utils::id_erreur]=errors;
 }
+
