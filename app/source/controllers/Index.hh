@@ -18,7 +18,9 @@ class Index:
 	) override;
 
   private:
-  void traitement_Get_Post(drogon::HttpViewData &data,const drogon::HttpRequestPtr &req);
+  void traitement_Get_Post(drogon::HttpViewData &data
+                          ,const drogon::HttpRequestPtr &req
+                          ,drogon::HttpResponsePtr & resp);
   void detection_exemples(const drogon::HttpRequestPtr &req);
   void chargement_exemples(const drogon::HttpRequestPtr &req,std::string  const&filename);
   void Session_to_data(const drogon::HttpRequestPtr &req,drogon::HttpViewData &data);

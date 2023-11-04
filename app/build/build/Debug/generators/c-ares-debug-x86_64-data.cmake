@@ -7,7 +7,7 @@ set(c-ares_FIND_DEPENDENCY_NAMES "")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(c-ares_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/c-are9f690932330ef/p")
+set(c-ares_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/c-are30ddf1d94dd73/p")
 set(c-ares_BUILD_MODULES_PATHS_DEBUG )
 
 

@@ -18,8 +18,8 @@
                 "CMAKE_POLICY_DEFAULT_CMP0091": "NEW",
                 "CMAKE_BUILD_TYPE": "Debug"
             },
-            "toolchainFile": "/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/Github/chrppi/app/build/build/Debug/generators/conan_toolchain.cmake",
-            "binaryDir": "/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/Github/chrppi/app/build/build/Debug"
+            "toolchainFile": "/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/GithubV4/Github/chrppi/app/build/build/Debug/generators/conan_toolchain.cmake",
+            "binaryDir": "/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/GithubV4/Github/chrppi/app/build/build/Debug"
         }
     ],
     "buildPresets": [

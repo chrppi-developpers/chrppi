@@ -42,7 +42,7 @@
 
 
 	<body>
-		<div>
+		<div >
 			<form  id="<%c++ $$<< utils::id_form_file;%>" action="" method="post" enctype="multipart/form-data">
 				<div class="field has-addons">
 					<div class="file">
@@ -65,8 +65,10 @@
 
 				</div>
 			</form>
+
+
 		</div>
-		<form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="" method="post">		
+		<form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="" method="post">	
 			<section class="hero has-background-danger ">
         	    <div class="hero-body">
 					<div class="columns is-multiline  is-centered">
@@ -126,6 +128,7 @@
 							</div>
 						</div>
 						<textarea  class="textarea is-primary " placeholder="CHR CODE" rows="20"><%c++$$<< @@.get<std::string>(utils::key_content_exemple);%></textarea>
+						<input type="submit" name="<%c++ $$ <<utils::name_download_session;%>"  class="button is-info" value="Download Your Session" />	
 					</div>
 					<div class="column is-one-two " >
 						<div class="box">

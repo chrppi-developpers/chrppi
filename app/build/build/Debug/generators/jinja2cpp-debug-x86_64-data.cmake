@@ -15,7 +15,7 @@ set(fmt_FIND_MODE "NO_MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(jinja2cpp_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/jinjacbd012d4abd32/p")
+set(jinja2cpp_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/jinja76bedfa1c0715/p")
 set(jinja2cpp_BUILD_MODULES_PATHS_DEBUG )
 
 

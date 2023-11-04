@@ -13,7 +13,7 @@ set(ZLIB_FIND_MODE "NO_MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(drogon_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/drogo4d23d99f0706d/p")
+set(drogon_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/drogoe13c2ac524dca/p")
 set(drogon_BUILD_MODULES_PATHS_DEBUG )
 
 

@@ -10,24 +10,33 @@ void Index::asyncHandleHttpRequest
     const drogon::HttpRequestPtr &req,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback
 ) 
-{
+{    
+
+    
     drogon::HttpAppFramework::instance().enableSession(utils::timeout_session);
 
     drogon::HttpViewData data;
+    drogon::HttpResponsePtr resp (nullptr);
     //data["name"] = req->getParameter("name");
-    traitement_Get_Post(data,req);
+    traitement_Get_Post(data,req,resp);
     detection_exemples(req);
     Session_to_data(req,data);
-
-    auto resp = drogon::HttpResponse::newHttpViewResponse("index_view", data);
+    if(resp==nullptr)
+    {
+        resp = drogon::HttpResponse::newHttpViewResponse("index_view", data);   
+    }
+    
+//    auto resp =drogon::HttpResponse::newFileResponse(utils::upload_path+ "/CMakeLists.txt");
     callback(resp);
 
 
 }
 
-void Index::traitement_Get_Post(drogon::HttpViewData &data,const drogon::HttpRequestPtr &req)
-{
-    std::cout << req->session()->sessionId() << std::endl;
+void Index::traitement_Get_Post(
+    drogon::HttpViewData &data
+    ,const drogon::HttpRequestPtr &req
+    ,drogon::HttpResponsePtr & resp)
+{   
     if(!req->getParameter(utils::key_Add_constrain).empty())
     {
         //traitement add un contrainte
@@ -77,10 +86,15 @@ void Index::traitement_Get_Post(drogon::HttpViewData &data,const drogon::HttpReq
         //clear the variable store
         std::cout << "clear the variable store "<< std::endl;
     }
-    if(!req->getParameter(utils::name_load_session).empty())
+    if(!req->getParameter(utils::name_download_session).empty())
     {
         //clear the variable store
-        std::cout << "load a session "<< std::endl;
+        std::cout << "Download a session "<< std::endl;
+        resp =drogon::HttpResponse::newFileResponse(utils::upload_path+ "/CMakeLists.txt");
+        //resp->setContentTypeCode(drogon::ContentType::CT_APPLICATION_OCTET_STREAM);
+        //je rajoute ce header pour dire au navigateur de le telecharger 
+        resp->addHeader("Content-Disposition","attachment;filename=session.sess");
+        
     }
 }
 

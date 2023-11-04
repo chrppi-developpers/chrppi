@@ -7,6 +7,7 @@ namespace utils{
     */
     const std::string emplacement_static_file("static_files");
     const std::string emplacement_exemple_chr("exemple_chr");
+    const std::string upload_path("./uploads");
     /*
     =============================KEY HTML======================================
     */
@@ -33,6 +34,7 @@ namespace utils{
     const std::string id_session_filename("id session filename");
     const std::string id_session_file("id session file");
     const std::string id_form_file("id form file");
+    const std::string name_download_session("name download session");
     
     
     

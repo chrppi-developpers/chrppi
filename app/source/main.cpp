@@ -11,7 +11,7 @@ int main(int , char * [])
     drogon::app().setDocumentRoot(utils::emplacement_static_file);
     drogon::app().enableSession(utils::timeout_session);
     drogon::app().setClientMaxBodySize(20 * 2000 * 2000)
-        .setUploadPath("./uploads");
+        .setUploadPath(utils::upload_path);
     //drogon::app().setFileTypes({"csp"});
     LOG_INFO << "Server running on " << utils::ip << ":" << utils::port;
     // Run the app
