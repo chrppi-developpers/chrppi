@@ -8,8 +8,9 @@ IFS=$'\n\t'
 # Go to the project folder
 cd "$(dirname "$0")/.."
 
-# Equivalent to `git clean -ffdx` without removing large build folders 
-sudo git ls-files --other --directory --exclude-standard \
+# Perform the cleaning
+git clean -ffdxn \ 
+	| cut --delimiter ' ' --fields 3- \
 	| grep --invert-match --extended-regexp "^app/conan/home/" \
 	| grep --invert-match --extended-regexp "^app/third-party/" \
 	| xargs -I{} rm --recursive --force {}

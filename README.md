@@ -83,7 +83,7 @@ sudo loginctl enable-linger user
 
 ```bash
 sudo ./inspect.sh
-sudo ./run.sh
+./run.sh
 ```
 
 ## Rootless deployment
