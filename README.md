@@ -96,11 +96,22 @@ LERIA deployment is secure despite being rootful because podman runs in a Kernel
 
 To run the server in rootless mode you will need to select a registered or dynamic ports (a number between 1024 and 65535).
 
+### Set external port
+
 You will assign this value (`$port`) to the variable `EXTERNAL_PORT` in `app/.env` file.
 
 ```bash
-sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\1${port}/" app/.env 
+sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\1$port/" app/.env 
 ```
+
+### Set port forwarding
+
+```bash
+sudo iptables -t nat -I OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j REDIRECT --to-ports $port
+sudo iptables -t nat -I PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports $port
+```
+
+### Build and run the app
 
 Then build and run the app with the current user on the select port.
 
