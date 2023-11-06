@@ -102,7 +102,7 @@ You will assign this value (`$port`) to the variable `EXTERNAL_PORT` in `app/.en
 sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\1${port}/" app/.env 
 ```
 
-Then build and run the app with user on the select port.
+Then build and run the app with the current user on the select port.
 
 ```bash
 ./env/build.sh
