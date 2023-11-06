@@ -1,4 +1,4 @@
-# Install script for directory: /home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/GithubV4/Github/chrppi/app
+# Install script for directory: /media/user/app
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/GithubV4/Github/chrppi/app/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/media/user/app/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

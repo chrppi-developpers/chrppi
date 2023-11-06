@@ -9,7 +9,7 @@ set(OpenSSL_FIND_MODE "NO_MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(trantor_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/trantc2947e1ce2550/p")
+set(trantor_PACKAGE_FOLDER_DEBUG "/media/user/app/conan/home/p/b/trant16ec32940e59f/p")
 set(trantor_BUILD_MODULES_PATHS_DEBUG )
 
 

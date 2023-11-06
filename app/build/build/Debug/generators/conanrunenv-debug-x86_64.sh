@@ -1,4 +1,4 @@
-script_folder="/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/GithubV4/Github/chrppi/app/build/build/Debug/generators"
+script_folder="/media/user/app/build/build/Debug/generators"
 echo "echo Restoring environment" > "$script_folder/../../../build/Debug/generators/deactivate_conanrunenv-debug-x86_64.sh"
 for v in OPENSSL_MODULES
 do
@@ -13,4 +13,4 @@ do
 done
 
 
-export OPENSSL_MODULES="/home/quentin/.conan2/p/b/opens723fc04b35bf9/p/lib/ossl-modules"
+export OPENSSL_MODULES="/media/user/app/conan/home/p/b/opens95eaca4074f5b/p/lib/ossl-modules"

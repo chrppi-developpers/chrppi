@@ -1,3 +1,0 @@
-- Load BUILD_TYPE from app/.env in app/conan/profile.txt
-- Install Cling
-- Install CHR++ as a Git submodule

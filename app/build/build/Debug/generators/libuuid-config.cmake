@@ -25,7 +25,7 @@ foreach(_DEPENDENCY ${util-linux-libuuid_FIND_DEPENDENCY_NAMES} )
     endif()
 endforeach()
 
-set(libuuid_VERSION_STRING "2.39")
+set(libuuid_VERSION_STRING "2.39.2")
 set(libuuid_INCLUDE_DIRS ${util-linux-libuuid_INCLUDE_DIRS_DEBUG} )
 set(libuuid_INCLUDE_DIR ${util-linux-libuuid_INCLUDE_DIRS_DEBUG} )
 set(libuuid_LIBRARIES ${util-linux-libuuid_LIBRARIES_DEBUG} )

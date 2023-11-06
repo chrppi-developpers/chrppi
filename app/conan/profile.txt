@@ -1,6 +1,6 @@
 [settings]
 arch=x86_64
-build_type=Debug
+build_type={{ os.getenv("BUILD_TYPE") }}
 compiler=gcc
 compiler.cppstd=gnu20
 compiler.libcxx=libstdc++

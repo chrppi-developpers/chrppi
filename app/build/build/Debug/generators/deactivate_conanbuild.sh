@@ -1,1 +1,1 @@
-. "/home/quentin/MEGA/MEGAsync/cours_fac/M2_Informatique/Projet_Annuel/GithubV4/Github/chrppi/app/build/build/Debug/generators/deactivate_conanbuildenv-debug-x86_64.sh"
+. "/media/user/app/build/build/Debug/generators/deactivate_conanbuildenv-debug-x86_64.sh"

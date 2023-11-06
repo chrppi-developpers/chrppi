@@ -6,7 +6,7 @@ set(jsoncpp_FIND_DEPENDENCY_NAMES "")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(jsoncpp_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/jsonc741a45059b091/p")
+set(jsoncpp_PACKAGE_FOLDER_DEBUG "/media/user/app/conan/home/p/b/jsonc7ac960042638a/p")
 set(jsoncpp_BUILD_MODULES_PATHS_DEBUG )
 
 

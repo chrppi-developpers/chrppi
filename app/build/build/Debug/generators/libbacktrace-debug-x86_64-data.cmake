@@ -6,7 +6,7 @@ set(libbacktrace_FIND_DEPENDENCY_NAMES "")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(libbacktrace_PACKAGE_FOLDER_DEBUG "/home/quentin/.conan2/p/b/libba35b5886b669f5/p")
+set(libbacktrace_PACKAGE_FOLDER_DEBUG "/media/user/app/conan/home/p/b/libbaa3de9d37d9d69/p")
 set(libbacktrace_BUILD_MODULES_PATHS_DEBUG )
 
 

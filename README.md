@@ -2,68 +2,109 @@
 
 This project is a website that implement an interpreter for [CHR++](https://gitlab.com/vynce/chrpp).
 
-The website can be acessed localy on [http://localhost:8000](http://localhost:8000) and it is deployed on [LERIA](https://leria-etud.univ-angers.fr/~viallard).
+The website can be acessed localy on [http://localhost:8000](http://localhost) and it is deployed on [LERIA](https://leria-etud.univ-angers.fr/~viallard).
 
 This repository is hosted on [Github](https://github.com/chrppi-developpers/chrppi).
 
+## Technologies by dependance/usage
+
+- Container engine (Podman)
+	- C++ package manager (Conan)
+		- Web framework (Drogon)
+			- CSS framework (Bulma)
+			- C++ interpreter (cling)
+				- CHR++ compiler (chrppc)
+
+## Requirements
+
+- `Bash` Unix shell
+- `Podman` container engine
+
 ## LERIA deployment
 
-### Create and go inside a KVM container
+Deploy the app on the LERIA server.
+
+More information on the [LERIA wiki](https://wiki.leria.univ-angers.fr/ua_members/cloud).
+
+### Build and prepare the app
+
+```bash
+cd env
+./build.sh
+./inspect.sh
+./build.sh
+exit
+sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" app/.env
+```
+
+### Upload the app to LERIA
+
+```bash
+cd ../..
+tar --verbose --create --gzip --file chrppi.tgz --exclude .git chrppi
+scp -P 2019 chrppi.tgz viallard@leria-etud.univ-angers.fr:~
+```
+
+### Create and connect to new KVM container
 
 ```bash
 ssh -p 2019 viallard@leria-etud.univ-angers.fr
+kvm.delete
 kvm.create
-kvm.start
-ssh-keygen -f "/home/viallard/.ssh/known_hosts" -R "etud-kvm-viallard"
+scp chrppi.tgz root@etud-kvm-viallard:~
 kvm.connect
 ```
 
-### Setup host and user
+### Set up the KVM container
 
 ```bash
-echo "127.0.0.1        ${HOSTNAME}" >> /etc/hosts
+echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
 apt-get install sudo --yes
-useradd app --create-home --shell /bin/bash
-usermod --append --groups sudo app
-passwd --delete app
-su --login app
+useradd user --create-home --shell /bin/bash
+usermod --append --groups sudo user
+passwd --delete user
+mv chrppi.tgz /home/user
+su --login user
+tar --verbose --extract --gzip --file chrppi.tgz
+sudo rm chrppi.tgz
 ```
 
-### Install Docker
-
-These commands below are a modified version of installation instructions for *Docker Desktop* on Debian decripbed in the [official documentation](https://docs.docker.com/desktop/install/debian/).
+### Build and copy the app
 
 ```bash
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg --yes
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-# Install the Docker packages
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --yes
-
-# Manage Docker as a non-root user 
-# Source: https://docs.docker.com/engine/install/linux-postinstall
-sudo groupadd docker
-sudo usermod -aG docker $USER
-newgrp docker
-```
-
-### Clone the repository and deploy the app
-
-```bash
-sudo apt-get install git --yes
-git clone https://github.com/chrppi-developpers/chrppi
 cd chrppi/env
+sudo apt-get install podman --yes
+sudo loginctl enable-linger user
 ./build.sh
-./run_app.sh
+./root_copy.sh
+```
+
+### Run the app as root
+
+```bash
+sudo ./inspect.sh
+sudo ./run.sh
+```
+
+## Rootless deployment
+
+LERIA deployment use root because leria only expose port 80 and we can't modify network routing.
+
+However, rootless deployement is more secure on most systems.
+
+LERIA deployment is secure despite being rootful because podman runs in a Kernel-based Virtual Machine isolated from starwars.
+
+To run the server in rootless mode you will need to select a registered or dynamic ports (a number between 1024 and 65535).
+
+You will assign this value (`$port`) to the variable `EXTERNAL_PORT` in `app/.env` file.
+
+```bash
+sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\1${port}/" app/.env 
+```
+
+Then build and run the app with user on the select port.
+
+```bash
+./env/build.sh
+./env/run.sh
 ```
