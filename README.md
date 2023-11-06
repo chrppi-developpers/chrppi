@@ -40,8 +40,9 @@ sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" app/.env
 ### Upload the app to LERIA
 
 ```bash
-cd ../..
-tar --verbose --create --gzip --file chrppi.tgz --exclude .git chrppi
+./env/clean.sh
+cd ..
+tar --verbose --create --gzip --file chrppi.tgz chrppi
 scp -P 2019 chrppi.tgz viallard@leria-etud.univ-angers.fr:~
 ```
 

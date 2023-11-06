@@ -1,3 +1,0 @@
-/media/user/app/build/CMakeFiles/chrppi.dir
-/media/user/app/build/CMakeFiles/edit_cache.dir
-/media/user/app/build/CMakeFiles/rebuild_cache.dir
