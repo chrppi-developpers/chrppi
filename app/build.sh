@@ -13,17 +13,20 @@ cd "$(dirname "$0")"
 # Get the app environment variables
 source .env
 
-# Set the right conan home
-if [[ $# = 1 && $1 = host ]]
+# Get conan home
+if [ -v OS_ENV ]
 then
-	CONAN_HOME=$(conan config home)
-else
 	CONAN_HOME="${PWD}/${CONAN_PATH}"
+else
+	CONAN_HOME=$(conan config home)
 fi
+
+# Get conan ctl
+DROGON_CTL="$(find "${CONAN_HOME}" -path '*/bin/drogon_ctl')"
 
 # Remove previous build
 rm -rf build
 
 # Configure and build app
-cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CONAN_HOME=${CONAN_HOME}
+cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CONAN_HOME=${CONAN_HOME} -D DROGON_CTL=${DROGON_CTL}
 cmake --build build

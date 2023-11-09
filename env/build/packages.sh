@@ -15,11 +15,8 @@ source .env
 sudo apt-get install python3-pip --yes
 sudo pip install --break-system-packages conan
 CONAN_HOME="${PWD}/${CONAN_PATH}"
-if [ ! -d "$CONAN_HOME" ]
-then
-	export CONAN_HOME
-	conan profile detect
-fi
+export CONAN_HOME
+conan profile detect
 
 # Install tools to build the app
 sudo apt-get install --yes cmake ninja-build g++ python3

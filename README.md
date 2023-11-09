@@ -29,9 +29,8 @@ More information on the [LERIA wiki](https://wiki.leria.univ-angers.fr/ua_member
 ### Build and prepare the app
 
 ```bash
-cd env
-./build.sh
-./inspect.sh
+./env/build.sh
+./env/inspect.sh
 ./build.sh
 exit
 sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" app/.env

@@ -8,9 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Fail compilation at many warning
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wfatal-errors -Wshadow")
 
-# Set build type
+# Default values
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
+endif()
+if(NOT DROGON_CTL)
+	set(DROGON_CTL drogon_ctl)
 endif()
 
 # Conan install
@@ -36,10 +39,11 @@ foreach(csp_file ${SCP_LIST})
 	exec_program(basename ARGS "-s .csp ${csp_file}" OUTPUT_VARIABLE class_name)
 	message(STATUS "view class_name:" ${class_name})
 	add_custom_command(OUTPUT ${class_name}.h ${class_name}.cc
-		COMMAND drogon_ctl
+		COMMAND "${DROGON_CTL}"
 		ARGS create view ${csp_file}
 		DEPENDS ${csp_file}
-		VERBATIM )
+		VERBATIM 
+	)
 	set(VIEWS_SRC ${VIEWS_SRC} ${class_name}.cc)
 endforeach()
 

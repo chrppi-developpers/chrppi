@@ -22,6 +22,7 @@ fi
 # - bind a container port with an host port (-p)
 # - Map the host user id with the one used inside the container (--userns) 
 # - Link files between the host and the container (--volume)
+# - Load an environment file (--env-file)
 # - The container continue to run in the background when CTRL+C is pressed (--sig-proxy)
 # - The container is based on the latest $APP_NAME image
 # - Execute run_app command
@@ -29,6 +30,7 @@ podman container run \
 	-p $EXTERNAL_PORT:$INTERNAL_PORT \
 	--userns keep-id \
 	--volume "$PWD/app:/media/user/app" \
+	--env-file env/.env \
 	--sig-proxy=false \
 	$APP_NAME:latest \
 	./run.sh

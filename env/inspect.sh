@@ -22,11 +22,13 @@ fi
 # - bind a container port with an host port (-p)
 # - Map the host user id with the one used inside the container (--userns)
 # - Link files between the host and the container (--volume)
+# - Load an environment file (--env-file)
 # - Interactive terminal (--interactive --tty)
 # - The container is based on the latest $APP_NAME image
 podman container run \
 	-p $EXTERNAL_PORT:$INTERNAL_PORT \
 	--userns keep-id \
 	--volume "$PWD/app:/media/user/app" \
+	--env-file env/.env \
 	--interactive --tty \
 	$APP_NAME:latest

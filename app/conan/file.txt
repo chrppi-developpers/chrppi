@@ -1,6 +1,9 @@
 [requires]
 drogon/1.8.7
 
+[options]
+drogon*:with_ctl=True
+
 [generators]
 CMakeDeps
 CMakeToolchain

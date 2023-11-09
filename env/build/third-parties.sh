@@ -1,6 +1,7 @@
 #!/bin/bash
 # Get app third-parties
 
+: <<'BLOCK_COMMENT'
 # Strict mode and trace
 set -o errexit -o nounset -o pipefail
 IFS=$'\n\t'
@@ -14,27 +15,6 @@ then
 	mkdir third-party
 	pushd third-party
 	sudo apt-get install --yes git
-
-	# Install drogon_ctl (https://drogonframework.github.io/drogon-docs/#/ENG-02-Installation?id=ubuntu-1804)
-	# Only build CTL (https://github.com/drogonframework/drogon#building-options)
-	sudo apt-get install --yes \
-		libjsoncpp-dev \
-		uuid-dev \
-		libssl-dev
-	git clone --branch v1.9.0 --depth 1 https://github.com/drogonframework/drogon
-	pushd drogon
-	git submodule update --init
-	cmake \
-		-D CMAKE_BUILD_TYPE=Release \
-		-D BUILD_EXAMPLES=OFF \
-		-D BUILD_ORM=OFF \
-		-D BUILD_BROTLI=OFF \
-		-D BUILD_YAML_CONFIG=OFF \
-		-S . \
-		-B build \
-		-G Ninja
-	cmake --build build
-	popd
 
 	# Build Cling
 	# Based on https://rawcdn.githack.com/root-project/cling/d59d27ad61f2f3a78cd46e652cd9fb8adb893565/www/build.html
@@ -62,11 +42,9 @@ fi
 
 # Install third-parties
 cd third-party
-pushd drogon
-	sudo cmake --install build
-popd
 pushd cling
 	sudo cmake --install build
 popd
 pushd chrpp
 	sudo cmake --install build
+BLOCK_COMMENT
