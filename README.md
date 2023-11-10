@@ -2,7 +2,7 @@
 
 This project is a website that implement an interpreter for [CHR++](https://gitlab.com/vynce/chrpp).
 
-The website can be acessed localy on [http://localhost:8000](http://localhost) and it is deployed on [LERIA](https://leria-etud.univ-angers.fr/~viallard).
+The website can be acessed localy on [http://localhost:8000](http://localhost) and it is deployed on [LERIA](https://etud-kvm-viallard.leria-etud.univ-angers.fr).
 
 This repository is hosted on [Github](https://github.com/chrppi-developpers/chrppi).
 
@@ -118,3 +118,7 @@ Then build and run the app with the current user on the select port.
 ./env/build.sh
 ./env/run.sh
 ```
+
+### Access to the app
+
+Got to https://etud-kvm-viallard.leria-etud.univ-angers.fr
