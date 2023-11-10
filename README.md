@@ -39,7 +39,6 @@ sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" app/.env
 ### Upload the app to LERIA
 
 ```bash
-./env/clean.sh
 cd ..
 tar --verbose --create --gzip --file chrppi.tgz chrppi
 scp -P 2019 chrppi.tgz viallard@leria-etud.univ-angers.fr:~
@@ -79,11 +78,11 @@ sudo loginctl enable-linger user
 ./root_copy.sh
 ```
 
-### Run the app as root
+### execute the app as root
 
 ```bash
 sudo ./inspect.sh
-./run.sh
+./execute.sh
 ```
 
 ## Rootless deployment
