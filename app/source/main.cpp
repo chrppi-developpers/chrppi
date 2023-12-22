@@ -1,32 +1,34 @@
 #include <drogon/HttpAppFramework.h>
-#include"utils/utils.hh"
+#include <cstdlib>
+
+#include"config.hh"
 
 // Run drogon app
-// $1 is the port used by drogon
-int main(int argc, char * argv[])
+int main()
 {
+	// Drogon port given by environment
+	uint16_t port;
+	if (const char * port_str = std::getenv("INTERNAL_PORT"))
+		port = std::atoi(port_str);
+
 	// Fail to run
-	if (argc < 2)
+	else
 	{
-		LOG_FATAL << "A port must be given as argument (execute run.sh to use the right port)";
+		LOG_FATAL << "INTERNAL_PORT environment variable must be set";
 		return EXIT_FAILURE;
 	}
 
-	// App constants
-	const std::string ip("0.0.0.0");
-	const uint16_t port(std::atoi(argv[1]));
-
 	// Configure the app
 	drogon::app()
-		.addListener(ip, port)
-		.setDocumentRoot("static_files")
-		.enableSession(500000)
-		.setClientMaxBodySize(20 * 2000 * 2000)
-        	.setUploadPath(utils::upload_path)
+		.addListener(config::drogon::ip, port)
+		.setDocumentRoot(config::drogon::document_root)
+        .setUploadPath(config::drogon::upload_path)
+		.enableSession(config::drogon::session_timeout)
+		.setClientMaxBodySize(config::drogon::client_max_body_size)
 	;
 
 	// Run the app
-	LOG_INFO << "Server running on " << ip << ":" << port;
+	LOG_INFO << "Server running on " << config::drogon::ip << ":" << port;
 	drogon::app().run();
 
 	return EXIT_SUCCESS;

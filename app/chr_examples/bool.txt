@@ -1,0 +1,121 @@
+/**
+ * Simple boolean solver
+ *
+ * Implementation of a simple constraint solver based
+ * on boolean variables and operators.
+ */
+
+<CHR name="BOOL_SAMPLE">
+	<chr_constraint> 	and_(?bool,?bool,?bool),
+				or_(?bool,?bool,?bool),
+				xor_(?bool,?bool,?bool),
+				neg_(?bool,?bool),
+				imp_(?bool,?bool)
+     // 
+	 // and/3 specification
+	 // 	and(0,0,0).
+	 // 	and(0,1,0).
+	 // 	and(1,0,0).
+	 // 	and(1,1,1).
+	 // 
+	
+	and_(false,_,Y) <=> Y%=false;;
+	and_(_,false,Y) <=> Y%=false;;
+	and_(true,X,Y) <=> Y%=X;;
+	and_(X,true,Y) <=> Y%=X;;
+	and_(X,Y,true) <=> X%=true,Y%=true;;
+	and_(X,X,Z) <=> X%=Z;;
+	//and_(X,Y,X) <=> imp(X,Y);;
+	//and_(X,Y,Y) <=> imp(Y,X);;
+	and_(X,Y,A) \ and_(X,Y,B) <=> A%=B;;
+	and_(X,Y,A) \ and_(Y,X,B) <=> A%=B;;
+
+	// 
+	// or/3 specification
+	// 	or(0,0,0).
+	// 	or(0,1,1).
+	// 	or(1,0,1).
+	// 	or(1,1,1).
+	// 
+	
+	or_(false,X,Y) <=> Y%=X;;
+	or_(X,false,Y) <=> Y%=X;;
+	or_(X,Y,false) <=> X%=false,Y%=false;;
+	or_(true,_,Y) <=> Y%=true;;
+	or_(_,true,Y) <=> Y%=true;;
+	or_(X,X,Z) <=> X%=Z;;
+	//or_(X,Y,X) <=> imp_(Y,X);;
+	//or_(X,Y,Y) <=> imp_(X,Y);;
+	or_(X,Y,A) \ or_(X,Y,B) <=> A%=B;;
+	or_(X,Y,A) \ or_(Y,X,B) <=> A%=B;;
+
+	// 
+	// xor/3 specification
+	//   xor(0,0,0).
+	//   xor(0,1,1).
+	//   xor(1,0,1).
+	//   xor(1,1,0).
+	// 
+	
+	xor_(false,X,Y) <=> X%=Y;;
+	xor_(X,false,Y) <=> X%=Y;;
+	xor_(X,Y,false) <=> X%=Y;;
+	xor_(true,X,Y) <=> neg_(X,Y);;
+	xor_(X,true,Y) <=> neg_(X,Y);;
+	xor_(X,Y,true) <=> neg_(X,Y);;
+	xor_(X,X,Y) <=> Y%=false;;
+	xor_(X,Y,X) <=> Y%=false;;
+	xor_(Y,X,X) <=> Y%=false;;
+	xor_(X,Y,A) \ xor_(X,Y,B) <=> A%=B;;
+	xor_(X,Y,A) \ xor_(Y,X,B) <=> A%=B;;
+
+	// 
+	// neg/2 specification
+	//   neg(0,1).
+	//   neg(1,0).
+	// 
+	
+	neg_(false,X) <=> X%=true;;
+	neg_(X,false) <=> X%=true;;
+	neg_(true,X) <=> X%=false;;
+	neg_(X,true) <=> X%=false;;
+	neg_(X,X) <=> failure();;
+	neg_(X,Y) \ neg_(Y,Z) <=> X%=Z;;
+	neg_(X,Y) \ neg_(Z,Y) <=> X%=Z;;
+	neg_(Y,X) \ neg_(Y,Z) <=> X%=Z;;
+	// Interaction with other boolean constraints
+	neg_(X,Y) \ and_(X,Y,Z) <=> Z%=false;;
+	neg_(Y,X) \ and_(X,Y,Z) <=> Z%=false;;
+	neg_(X,Z) , and_(X,Y,Z) <=> X%=true,Y%=false,Z%=false;;
+	neg_(Z,X) , and_(X,Y,Z) <=> X%=true,Y%=false,Z%=false;;
+	neg_(Y,Z) , and_(X,Y,Z) <=> X%=false,Y%=true,Z%=false;;
+	neg_(Z,Y) , and_(X,Y,Z) <=> X%=false,Y%=true,Z%=false;;
+	neg_(X,Y) \ or_(X,Y,Z) <=> Z%=true;;
+	neg_(Y,X) \ or_(X,Y,Z) <=> Z%=true;;
+	neg_(X,Z) , or_(X,Y,Z) <=> X%=false,Y%=true,Z%=true;;
+	neg_(Z,X) , or_(X,Y,Z) <=> X%=false,Y%=true,Z%=true;;
+	neg_(Y,Z) , or_(X,Y,Z) <=> X%=true,Y%=false,Z%=true;;
+	neg_(Z,Y) , or_(X,Y,Z) <=> X%=true,Y%=false,Z%=true;;
+	neg_(X,Y) \ xor_(X,Y,Z) <=> Z%=true;;
+	neg_(Y,X) \ xor_(X,Y,Z) <=> Z%=true;;
+	neg_(X,Z) \ xor_(X,Y,Z) <=> Y%=true;;
+	neg_(Z,X) \ xor_(X,Y,Z) <=> Y%=true;;
+	neg_(Y,Z) \ xor_(X,Y,Z) <=> X%=true;;
+	neg_(Z,Y) \ xor_(X,Y,Z) <=> X%=true;;
+	neg_(X,Y) , imp_(X,Y) <=> X%=false,Y%=true;;
+	neg_(Y,X) , imp_(X,Y) <=> X%=false,Y%=true;;
+	
+	// 
+	// imp/2 specification (implication)
+	//   imp(0,0).
+	//   imp(0,1).
+	//   imp(1,1).
+	// 
+	
+	imp_(false,_) <=> success();;
+	imp_(X,false) <=> X%=false;;
+	imp_(true,X) <=> X%=true;;
+	imp_(_,true) <=> success();;
+	imp_(X,X) <=> success();;
+	imp_(X,Y),imp_(Y,X) <=> X%=Y;;
+</CHR>

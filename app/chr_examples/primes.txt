@@ -1,0 +1,15 @@
+/**
+ * Prime numbers
+ *
+ * Use of the Sieve of Eratosthenes to calculate all prime numbers up to a given
+ * maximum.
+ */
+ 
+<CHR name="PRIMES">
+	<chr_constraint> prime(+int), candidate(+int)
+	
+	candidate(1) <=> success();;
+	candidate(N) <=> candidate(N - 1), prime(N);;
+	
+	absorb @ prime(Y) \ prime(X) <=> (X % Y) == 0 | success();;
+</CHR>

@@ -33,4 +33,4 @@ podman container run \
 	--env-file env/.env \
 	--sig-proxy=false \
 	$APP_NAME:latest \
-	./run.sh
+	./execute.sh

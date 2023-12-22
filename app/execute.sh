@@ -12,4 +12,5 @@ cd "$(dirname "$0")"
 source .env
 
 # Execute the app on the internal port
-./build/${APP_NAME} $INTERNAL_PORT
+export INTERNAL_PORT
+./build/${APP_NAME}

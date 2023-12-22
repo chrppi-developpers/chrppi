@@ -1,0 +1,14 @@
+/**
+ * Greatest Common Divisor (Naive approach)
+ *
+ * The Greatest Common Divisor (GCD) of two integers is the largest
+ * positive integer that divides the two numbers without a remainder.
+ * For example, the GCD of 12 and 18 is 6.
+ */
+
+<CHR name="GCD">
+	<chr_constraint> gcd(+unsigned long int), res(?unsigned long int)
+	gcd1 @ gcd(0ul) <=> success();;
+	gcd2 @ gcd(N) \ gcd(M) <=> N <= M | gcd(M-N);;
+	res  @ gcd(N) \ res(M) <=> M %= N;;
+</CHR>

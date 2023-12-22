@@ -1,222 +1,181 @@
-<%inc#include "../source/utils/utils.hh" %>
+<%inc #include "../source/config.hh" %>
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>CHRPPI</title>
-		<link rel="stylesheet" 
-        href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
-		<script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
-        <!--<link rel="stylesheet" href="css/debug.css">-->
-		<link rel="stylesheet" href="css/main.css">
-		<script type="text/javascript" src="scripts/main.js" defer></script>		
-<style>
-			.grid {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-}
-
-.grid * { grid-column: 2 / 3; };
-
-.center{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-};
-.block:not(:last-child) {
-  margin-bottom: 1.5rem;
-};
-
-
-.flexContainer {
-    display: flex;
-};
-
-.inputField {
-    flex: 1;
-};
-		</style>
+		<title>chrppi</title>
+		<link rel="stylesheet" href="css/bulma.css"/>
+		<script defer src="js/fontawesome.js"></script>
 	</head>
 
-
-
 	<body>
-		<div >
-			<form  id="<%c++ $$<< utils::id_form_file;%>" action="" method="post" enctype="multipart/form-data">
-				<div class="field has-addons">
-					<div class="file">
-						<label class="file-label">
-						  <input class="file-input" type="file" name="<%c++ $$<<utils::name_file_session; %>" id="<%c++ $$<<utils::id_session_file; %>">
-						  <span class="file-cta">
-							<span class="file-icon">
-							  <i class="fas fa-upload"></i>
-							</span>
-							<span class="file-label">
-							  Choose a file…
-							</span>
-						  </span>
-						  <span class="file-name" id="<%c++ $$<<utils::id_session_filename; %>">
-							Session file to load
-						  </span>
-						</label>
-					</div>
-					<input type="button" id="<%c++ $$<< utils::id_load_session;%>"  name="<%c++ $$ <<utils::name_load_session;%>"  class="button is-info" value="load session" />
+		<%c++
+			const auto & errors(@@.get<std::vector<std::string>>(config::html::error_id));
+			if (!errors.empty())
+			{
+				$$ << "<section class=\"section\"> <div class=\"notification is-danger\"> <p class=\"title\">ERROR</p> <ul>";
+					for (const auto & error: errors)
+						$$ << "<li>" << error << "</li>";
+				$$ << "</ul></div></section>";
+			}
+		%>
 
-				</div>
-			</form>
+		<section class="section">
+			<div class="columns is-multiline is-centered">
+	
+				<div class="column is-one-two">
 
+					<form method="post">
+						<div class="field">
+							<div class="select">
+								<select name="{% config::html::select_example %}" onchange="form.submit()">
+									<option selected disabled>Load an example</option>
+									<%c++ for (const auto & filename: @@.get<std::vector<std::string>>(config::html::chr_examples)){%>
+										<option value="{% filename %}">{% filename.substr(0, filename.find_last_of(".")) %}</option>
+									<%c++}%>
 
-		</div>
-		<form id="<%c++ $$<< utils::key_id_form_contenue;%>" action="" method="post">	
-			<section class="hero has-background-danger ">
-        	    <div class="hero-body">
-					<div class="columns is-multiline  is-centered">
-						<div class="column is-one-three ">
-        	    			<div class=" center  is-info">
-        	    			    <p class="title">chrppi</p>
-        	    			</div>
-						</div>
-						<div class="column is-one-three center">
-							<div class="field has-addons">
-        	    				<div class="select">
-									<select id="<%c++ $$<<utils::key_id_select_exemple;%>" name="<%c++ $$<<utils::key_id_select_exemple;%>">
-										<%c++
-										std::vector<std::string> filename_exemples=@@.get<std::vector<std::string>>(utils::key_Exemples_filenames);
-										for(std::string const&file:filename_exemples)
-										{
-											$$ << "<option value=\"" <<file <<"\" >" << file <<"</option>"; 
-										}
-										%>
-									</select>
-								</div>
-								<input type="submit" name="<%c++ $$ <<utils::key_load_exemple;%>"  class="button is-info" value="Load Exemple" />	
+								</select>
 							</div>
 						</div>
-						<div class="column is-one-three center">
-							
-						</div>
-					</div>
-				</div>
-        	</section>
-		
-			<%c++
-				std::vector<std::string> errors=@@.get<std::vector<std::string>>(utils::id_erreur);
-				if(!errors.empty())
-				{
-					$$<<"<section class=\"section\"> <div class=\"notification is-danger\"> <p class=\"title\">ERROR</p> <ul>";
-						for(std::string &error: errors)
-						{
-							$$<< "<li>" <<  error << "</li>";
-						}
-					$$<<"</ul></div></section>";
-				}
-			%>
-			<section class="section">
+						<textarea class="textarea" placeholder="CHR code" rows="20">{% @@.get<std::string>(config::html::chr_code) %}</textarea>
+					</form>
 
-				<div class="columns is-multiline  is-centered">
-					<div class="column is-one-two " >
-						<div class="columns is-multiline  is-centered">
-							<div class="column is-one-third center" >
-								<button class="button">AutoCompilation</button>
-							</div>
-							<div class="column is-one-third center">
-								<button class="button ">Persistance</button>
-							</div>
-							<div class="column is-one-third center">
-								<button class="button">Tracing</button>
-							</div>
-						</div>
-						<textarea  class="textarea is-primary " placeholder="CHR CODE" rows="20"><%c++$$<< @@.get<std::string>(utils::key_content_exemple);%></textarea>
-						<input type="submit" name="<%c++ $$ <<utils::name_download_session;%>"  class="button is-info" value="Download Your Session" />	
-					</div>
-					<div class="column is-one-two " >
-						<div class="box">
-							<div class="block">
-								<div class="block">
-									<p class="is-size-10">ADD Constraint</p> 
-									<div class="field has-addons">
-										<div class="control is-expanded">
-											<input class="input is-danger" name="<%c++ $$<<utils::key_Get_constrain;%>" size="20" type="text"  placeholder="Add Constraint">
-										</div>
-										<div class="control">
-											<input type="submit" name="<%c++ $$<<utils::key_Add_constrain;%>"   class="button is-danger" value="Add" />
-										</div>
-									</div>							  
-								</div>
-							</div>
-						</div>
-						<div class="box">
-							<div class="block">
-								<div class="block">
-									<div class="block">
-										<p class="is-size-10">Constraint Store</p>
-									</div>
-									<div class="block">
-										<input type="submit" name="<%c++ $$<<utils::key_Clear_constrain;%>" class="button is-danger" value="Clear" />
-									</div>
-								</div>
-								<div class="block">
-									<table class="table is-fullwidth">
-										<thead>
-										  <tr>
-											<th>ID</th>
-											<th>Constraint</th>
-										  </tr>
-										</thead>
-									</table>
-								</div>
-							</div>
-						</div>
-						<div class="box">
-							<div class="block">
-								<p class="is-size-10">Track a Variable</p> 
-								<div class="field has-addons">
-									<div class="control is-expanded">
-										<input class="input is-danger" name="<%c++ $$<<utils::key_champs_variable_track;%>" size="20" type="text"  placeholder="Variable">
-									</div>
-									<div class="control">
-										<input type="submit"  name="<%c++ $$<<utils::key_champs_variable_track_button;%>" class="button is-danger" value="Track" />
-									</div>
-								</div>	
-
-								<div class="control">
-									<label class="checkbox">
-										<input type="checkbox" name="<%c++ $$<<utils::name_value_variable_mutable_checkbox;%>" id="<%c++ $$<<utils::id_value_variable_mutable_checkbox	;%>">
-										Mutable
+					<div class="field has-addons">
+						<form method="post">
+							<p class="control">
+								<button class="button" type="submit" name="{% config::html::download_session %}" value="get">
+									<span class="icon is-small">
+										<i class="fas fa-download"></i>
+									</span>
+									<span>download session</span>
+								</button>
+							</p>
+						</form>
+					
+						<form method="post" enctype="multipart/form-data" action="upload_session">
+							<p class="control">
+								<div class="file">
+									<label class="file-label">
+										<input class="file-input" type="file" name="{% config::html::upload_session %}" accept=".json" onchange="form.submit()">
+										<span class="file-cta">
+											<span class="file-icon">
+												<i class="fas fa-upload"></i>
+											</span>
+											<span class="file-label">upload session</span>
+										</span>
 									</label>
 								</div>
-								<div class="control">
-									<input class="input is-danger is-hidden" id="<%c++ $$<<utils::id_value_variable_mutable;%>" name="<%c++ $$<<utils::name_champs_variable_track_valeur_mutable;%>" size="10" type="text"  placeholder="Value">
-								</div>
-							</div>
-						</div>
+							</p>
+						</form>
 
-						<div class="box">
-							<div class="block">
-								<div class="block">
-									<div class="block">
-										<p class="is-size-10">Variable Tracked</p>
-									</div>
-									<div class="block">
-										<input type="submit" name="<%c++ $$<< utils::key_id_button_variable_store;%>"  class="button is-danger" value="Clear" />
-									</div>
-								</div>
-								<div class="block">
-									<table class="table is-fullwidth">
-										<thead>
-										  <tr>
-											<th>Variable</th>
-											<th>Value</th>
-										  </tr>
-										</thead>
-									</table>
+					</div>
+
+				</div>
+
+				<div class="column is-one-two">
+					
+					<div class="my-3">
+					<form method="post">
+						<fieldset class="box">
+							<legend class="label has-text-centered">Add a constraint</legend>
+							<div class="field">
+								<label class="label" for="{% config::html::add_constraint_value %}">Constraint</label>
+								<div class="control">
+									<input class="input" type="text" name="{% config::html::add_constraint_value %}">
 								</div>
 							</div>
-						</div>
+							<div class="field">
+								<div class="control has-text-centered">
+									<input class="button" type="submit" name="{% config::html::add_constraint %}" value="add" />
+								</div>
+							</div>
+						</fieldset>
+					</form>
 					</div>
+
+					<form method="post">
+						<fieldset class="box">
+							<legend class="label has-text-centered">Constraint store</legend>
+							<table class="table is-fullwidth">
+								<thead>
+								  <tr>
+									<th>constraint</th>
+								  </tr>
+								</thead>
+								<tbody>
+									<%c++ for (const auto & constraint: @@.get<std::vector<std::string>>(config::html::constraint_store)){%>
+										<tr>
+											<td>{% constraint %}</td>
+										</tr>
+									<%c++}%>
+								</tbody>
+							</table>
+							<div class="field">
+								<div class="control has-text-centered">
+									<input class="button" type="submit" name="{% config::html::clear_constraint_store %}" value="clear" />
+								</div>
+							</div>
+						</fieldset>
+					</form>
+
+					<form method="post">
+						<fieldset class="box">
+							<legend class="label has-text-centered">Track a variable</legend>
+							<div class="field">
+								<label class="label" for="{% config::html::track_variable_type %}">Type</label>
+								<div class="control">
+									<input class="input" type="text" name="{% config::html::track_variable_type %}" size="20">
+								</div>
+							</div>
+							<div class="field">
+								<label class="label" for="{% config::html::track_variable_name %}">Name</label>
+								<div class="control">
+									<input class="input" type="text" name="{% config::html::track_variable_name %}" size="20">
+								</div>
+							</div>
+							<div class="field">
+								<label class="label">
+									Mutable
+									<input type="checkbox" name="{% config::html::track_variable_mutable %}">
+								</label>
+							</div>
+							<div class="field">
+								<div class="control has-text-centered">
+									<input class="button" type="submit" name="{% config::html::track_variable %}" value="track" />
+								</div>
+							</div>
+						</fieldset>
+					</form>
+
+					<form method="post">
+						<fieldset class="box">
+							<legend class="label has-text-centered">Tracked variables</legend>
+							<table class="table is-fullwidth">
+								<thead>
+									<tr>
+										<th>variable</th>
+										<th>value</th>
+									</tr>
+								</thead>
+								<tbody>
+									<%c++ for (const auto & variable: @@.get<std::vector<std::pair<std::string, std::string>>>(config::html::tracked_variables)){%>
+										<tr>
+											<td>{%  variable.first %}</td>
+											<td>{% variable.second %}</td>
+										</tr>
+									<%c++}%>
+								</tbody>
+							</table>
+							<div class="field">
+								<div class="control has-text-centered">
+									<input class="button" type="submit" name="{% config::html::clear_tracked_variables %}" value="clear" />
+								</div>
+							</div>
+						</fieldset>
+					</form>
 				</div>
-			</section>
-		</form>
+			</div>
+		</section>
 	</body>
 </html>

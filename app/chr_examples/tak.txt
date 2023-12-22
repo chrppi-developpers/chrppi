@@ -1,0 +1,15 @@
+/**
+ * The Takeuchi function
+ *
+ * Implementation of the TAK function, or Takeuchi Function.
+ */
+
+<CHR name="TAK">
+	<chr_constraint> tak(+int,+int,+int,?int)
+	tak(X,Y,Z,A) <=> X <= Y | Z %= A;;
+	tak(X,Y,Z,A) <=> X > Y |
+						tak(X-1,Y,Z,A1),
+						tak(Y-1,Z,X,A2),
+						tak(Z-1,X,Y,A3),
+						tak(A1,A2,A3,A);;
+</CHR>

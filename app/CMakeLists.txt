@@ -51,17 +51,14 @@ endforeach()
 add_executable(${PROJECT_NAME}
 	source/main.cpp
 	source/controllers/Index.cpp
+	source/interpreter/interpreter.cpp
 	${VIEWS_SRC}
 )
 
-# Get Drogon package
+# Get packages
 find_package(Drogon CONFIG REQUIRED)
+find_package(Cling CONFIG REQUIRED)
 
 # Link librairies
 target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
-
-###add_executable(embed_cling source/embed_cling.cpp)
-######find_package(Cling CONFIG REQUIRED)
-######target_link_libraries(embed_cling PRIVATE clingInterpreter)
-#########find_library(CLING_LIB cling /usr/local/lib REQUIRED)
-#########target_link_libraries(embed_cling PRIVATE ${CLING_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE cling)

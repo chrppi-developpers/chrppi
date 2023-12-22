@@ -1,0 +1,15 @@
+/**
+ * Fibonacci sequence (Naive approach)
+ *
+ * The Fibonacci sequence is characterized by the fact that every number
+ * after the first two is the sum of the two preceding ones.
+ */
+
+<CHR name="FIB">
+	// fibonacci(N,M) is true iff M is the Nth Fibonacci number.
+	
+	<chr_constraint> fib(+unsigned long int,?unsigned long int)
+	fib0 @ fib(0LU,M) <=> M %= 1;;
+	fib1 @ fib(1LU,M) <=> M %= 1;;
+	fib2 @ fib(N,M) <=> fib(N-1, M1), fib(N-2, M2), M %= M1 + M2;;
+</CHR>
