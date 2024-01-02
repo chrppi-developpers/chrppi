@@ -92,9 +92,11 @@ Else, use rootless Podman deployment.
 ### Build and copy the app
 
 ```bash
-cd chrppi/env
+sed --in-place --regexp-extended "s/(INTERNAL_PORT=).*/\18080/" app/.env
+sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" app/.env
+cd env
 sudo apt-get install podman --yes
-sudo loginctl enable-linger user
+sudo loginctl enable-linger $USER
 ./build.sh
 ./root_copy.sh
 ```
@@ -114,17 +116,25 @@ Rootfull deployment is needed when we can't modify network routing.
 
 However, rootless deployement is more secure on most systems.
 
-To run the app in rootless mode you will need to select a registered or dynamic ports (a number between 1024 and 65535).
+### Set internal port
 
-### Set external port
+Internal port is not important as long as its value is a registered or a dynamic ports (a number between 1024 and 65535):
 
-You will assign this value (`$port`) to the variable `EXTERNAL_PORT` in `app/.env` file.
+```bash
+sed --in-place --regexp-extended "s/(INTERNAL_PORT=).*/\18080/" app/.env 
+```
+
+### Set external port and port forwarding
+
+To run the app in rootless mode you will need to select a registered or a dynamic ports.
+
+You will assign this value (`$port`) to the variable `EXTERNAL_PORT` in `app/.env` file:
 
 ```bash
 sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\1$port/" app/.env 
 ```
 
-### Set port forwarding
+You will then map this port to port 80 with port forwarding:
 
 ```bash
 sudo iptables -t nat -I OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j REDIRECT --to-ports $port
