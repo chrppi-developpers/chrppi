@@ -80,7 +80,7 @@ export DEBIAN_FRONTEND=noninteractive && apt upgrade --yes
 apt install g++ --yes
 ```
 
-### execute the app as root
+### Execute the app as root
 
 ```bash
 ./execute.sh
@@ -121,7 +121,7 @@ cd ../env
 ./root_copy.sh
 ```
 
-### execute the app as root
+### Execute the app as root
 
 ```bash
 sudo ./run.sh
