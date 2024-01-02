@@ -24,7 +24,7 @@ This repository is hosted on [Github](https://github.com/chrppi-developpers/chrp
 
 Deploy the app on the LERIA server.
 
-More information on the [LERIA wiki](https://wiki.leria.univ-angers.fr/ua_members/cloud).
+More informations on the [LERIA wiki](https://wiki.leria.univ-angers.fr/ua_members/cloud).
 
 ### Build and prepare the app
 
