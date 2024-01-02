@@ -26,8 +26,8 @@ void Interpreter::new_session()
 	_json_session["changes"] = Json::arrayValue;
 
 	// Create a new cling session
-	_cling_interpreter = std::make_unique<cling::Interpreter>(argc(_cling_argv), _cling_argv, config::path::llvm_build.c_str());
-
+	_cling_interpreter = std::make_shared<cling::Interpreter>(argc(_cling_argv), _cling_argv, config::path::llvm_build.c_str());
+	
 	// Allow to print a space
 	if (failed(_cling_interpreter->declare("#include <iostream>")))
 		throw Exception("Failed to start CHR session");

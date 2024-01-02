@@ -1,9 +1,11 @@
 #pragma once
 #include<string>
 
+// Set constants used in code
 namespace config
 {
-	namespace drogon
+	// Drogon parameters used in main
+	namespace main
 	{
 		const std::string ip("0.0.0.0");
 		const std::string document_root("document_root");
@@ -12,6 +14,7 @@ namespace config
 		const size_t client_max_body_size(20 * 2000 * 2000);
 	}
 
+	// Paths of files
 	namespace path
 	{
 		const std::string chr_spaces("chr_spaces");
@@ -21,6 +24,7 @@ namespace config
 		const std::string chrpp_source("third-party/chrpp/source");
 	}
 
+	// Strings used in HTML
 	namespace html
 	{
 		const std::string select_example("select example");
@@ -48,5 +52,12 @@ namespace config
 		const std::string clear_variables("clear variables");
 
 		const std::string error_id("error");
+	}
+
+	// Session keys
+	namespace session
+	{
+		const std::string interpreter("session");
+		const std::string chr_code("chr_code");
 	}
 };

@@ -1,7 +1,9 @@
 #pragma once
 
-#include <cling/Interpreter/Interpreter.h>
 #include <memory>
+
+#include <cling/Interpreter/Interpreter.h>
+
 #include <json/value.h>
 
 // chrpp interpreter
@@ -83,7 +85,7 @@ class Interpreter
 		void define_cpp_space(const std::string & space_name);
 
 		// C++ interpreter used to compile CHR statement with chrppc
-		std::unique_ptr<cling::Interpreter> _cling_interpreter;
+		std::shared_ptr<cling::Interpreter> _cling_interpreter;
 
 		// Store logical variables name
 		std::vector<std::string> _variables;

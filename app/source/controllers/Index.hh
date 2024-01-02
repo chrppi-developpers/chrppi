@@ -3,8 +3,6 @@
 #include <drogon/HttpSimpleController.h>
 #include <drogon/HttpResponse.h>
 
-#include "../interpreter/interpreter.hh"
-
 class Index: 
 	public drogon::HttpSimpleController<Index>
 {
@@ -20,6 +18,4 @@ class Index:
 	private:
 
 		void add_error(drogon::HttpViewData & data, const std::string & error);
-
-		Interpreter _interpreter;
 };

@@ -1,2 +1,1 @@
-- Drogon controller should give each client its own session
 - Drogon controller should manage a pool of cling interpreter with a fixed size

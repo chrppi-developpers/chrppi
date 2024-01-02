@@ -20,15 +20,15 @@ int main()
 
 	// Configure the app
 	drogon::app()
-		.addListener(config::drogon::ip, port)
-		.setDocumentRoot(config::drogon::document_root)
-        .setUploadPath(config::drogon::upload_path)
-		.enableSession(config::drogon::session_timeout)
-		.setClientMaxBodySize(config::drogon::client_max_body_size)
+		.addListener(config::main::ip, port)
+		.setDocumentRoot(config::main::document_root)
+        .setUploadPath(config::main::upload_path)
+		.enableSession(config::main::session_timeout)
+		.setClientMaxBodySize(config::main::client_max_body_size)
 	;
 
 	// Run the app
-	LOG_INFO << "Server running on " << config::drogon::ip << ":" << port;
+	LOG_INFO << "Server running on " << config::main::ip << ":" << port;
 	drogon::app().run();
 
 	return EXIT_SUCCESS;
