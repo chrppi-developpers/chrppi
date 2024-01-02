@@ -104,8 +104,7 @@ sudo loginctl enable-linger $USER
 ### execute the app as root
 
 ```bash
-sudo ./inspect.sh
-./execute.sh
+sudo ./run.sh
 ```
 
 ## Rootless Podman deployment
@@ -146,6 +145,9 @@ sudo iptables -t nat -I PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports $por
 Then build and run the app with the current user on the select port.
 
 ```bash
-./env/build.sh
-./env/run.sh
+cd env
+sudo apt-get install podman --yes
+sudo loginctl enable-linger $USER
+./build.sh
+./run.sh
 ```
