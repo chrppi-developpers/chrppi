@@ -17,8 +17,7 @@ This repository is hosted on [Github](https://github.com/chrppi-developpers/chrp
 
 ## Requirements
 
-- `Bash` Unix shell
-- `Podman` container engine
+- `Debian` based operating system 
 
 ## LERIA deployment
 
