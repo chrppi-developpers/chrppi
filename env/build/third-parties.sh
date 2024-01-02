@@ -45,6 +45,3 @@ fi
 cd third-party
 sudo cmake --install llvm/build
 sudo cmake --install chrpp/build
-
-# Fix Cling install
-sudo cp llvm/lib/cmake/cling/ClingTargets.cmake /usr/local/lib/cmake/cling

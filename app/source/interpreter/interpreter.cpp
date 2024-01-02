@@ -9,9 +9,6 @@
 #include "interpreter.hh"
 #include "../config.hh"
 
-#include <iostream>
-#include <any>
-
 int argc(const char * argv[])
 {
 	int argc(0);
@@ -26,56 +23,34 @@ void Interpreter::new_session()
 
 	// Empty and initialize json session
 	_json_session.clear();
-	_json_session["add_variable"] = Json::arrayValue;
-	_json_session["add_constraint"] = Json::arrayValue;
+	_json_session["changes"] = Json::arrayValue;
 
 	// Create a new cling session
-	_cling_interpeter = std::make_unique<cling::Interpreter>(argc(_cling_argv), _cling_argv, config::path::llvm_build.c_str());
+	_cling_interpreter = std::make_unique<cling::Interpreter>(argc(_cling_argv), _cling_argv, config::path::llvm_build.c_str());
 
 	// Allow to print a space
-	_cling_interpeter->declare("#include <iostream>");
+	if (failed(_cling_interpreter->declare("#include <iostream>")))
+		throw Exception("Failed to start CHR session");
 
 	// Allow declaration shadowing
-	_cling_interpeter->execute("gClingOpts->AllowRedefinition = 1;");
+	_cling_interpreter->getRuntimeOptions().AllowRedefinition = true;
 
 	// Enable O3 optimization
-	_cling_interpeter->setDefaultOptLevel(3);
+	_cling_interpreter->setDefaultOptLevel(3);
 
 	// Include chrpp sources
-	_cling_interpeter->AddIncludePath(config::path::chrpp_source + "/runtime");
-	_cling_interpeter->AddIncludePath(config::path::chrpp_build + "/runtime");
-	_cling_interpeter->AddIncludePath(config::path::chrpp_build + "/examples");
-/*
-	_cling_interpeter->declare("int integer(123);");
-	cling::Value integer_value;
-	_cling_interpeter->execute("++integer");
-	_cling_interpeter->process("integer;", &integer_value);
-	std::cout << "integer is " << integer_value.getPtr();
-	std::cout << " = " << integer_value.getAs<long long>() << " = ";
-	integer_value.dump();
-
-	_cling_interpeter->declare("#include <string>");
-	_cling_interpeter->declare("std::string str;");
-	cling::Value str_value;
-	_cling_interpeter->execute("str = \"test\"");
-	_cling_interpeter->process("str;", &str_value);
-	std::cout << "str is " << *(std::string*)(str_value.getPtr()) << " = ";
-	std::string dump;
-	llvm::raw_string_ostream out(dump);
-	str_value.print(out);
-	out.str().pop_back();
-	std::cout << out.str() << std::endl;
-*/
+	_cling_interpreter->AddIncludePath(config::path::chrpp_source + "/runtime");
+	_cling_interpreter->AddIncludePath(config::path::chrpp_build + "/runtime");
 }
 
-void Interpreter::define_cpp_space(const std::string & cpp_path, const std::string & space_name)
+void Interpreter::define_cpp_space(const std::string & space_name)
 {
 	// Load C++ space definition with cling
-	if (_cling_interpeter->loadFile(cpp_path) != cling::Interpreter::kSuccess)
+	if (failed(_cling_interpreter->loadFile(cpp_path)))
 		throw Exception("Failed to load CHR space");
 
 	// Create the space
-	if (_cling_interpeter->declare("auto space(" + space_name + "::create());") != cling::Interpreter::kSuccess)
+	if (failed(_cling_interpreter->declare("auto space(" + space_name + "::create());")))
 		throw Exception("Failed to create CHR space");
 }
 
@@ -85,7 +60,6 @@ void Interpreter::define_space(const std::string & chr_path)
 	new_session();
 
 	// Compile space definition to C++ with chrppc
-	const std::string cpp_path(config::path::chr_spaces + "/space.cpp");
 	if (std::system((config::path::chrpp_build + "/chrppc/chrppc --stdout " + chr_path + " > " + cpp_path).c_str()) != 0)
 		throw Exception("Failed to compile CHR space");
 
@@ -114,7 +88,7 @@ std::vector<std::string> constraints(T & pb)
 	chr_file.close();
 
 	// Define space
-	define_cpp_space(cpp_path, space_name);
+	define_cpp_space(space_name);
 
 	// Update json session
 	std::ifstream read_chr_file(chr_path);
@@ -127,33 +101,99 @@ std::vector<std::string> constraints(T & pb)
 void Interpreter::add_variable(const std::string & type, const std::string & name, bool mutable_)
 {
 	// Declare the new variable
-	if (_cling_interpeter->declare("chr::Logical_var" + std::string {mutable_ ? "_mutable" : ""} + "<" + type + "> " + name + ";") != cling::Interpreter::kSuccess)
+	if (failed(_cling_interpreter->declare("chr::Logical_var" + std::string {mutable_ ? "_mutable" : ""} + "<" + type + "> " + name + ";")))
 		throw Exception("Failed to declare variable");
 
 	// Update json session
 	Json::Value add_variable;
-	add_variable["type"] = type;
-	add_variable["name"] = name;
-	add_variable["mutable"] = mutable_;
-	_json_session["add_variable"].append(add_variable);
+	add_variable["add_variable"]["type"] = type;
+	add_variable["add_variable"]["name"] = name;
+	add_variable["add_variable"]["mutable"] = mutable_;
+	_json_session["changes"].append(add_variable);
 
 	// Save variable name
 	_variables.emplace_back(name);
 }
 
+void Interpreter::remove_variable(const std::string & name)
+{
+	// Remove variable from vector
+	auto variable(std::find(_variables.begin(), _variables.end(), name));
+	if (variable == _variables.end())
+		throw Exception("Unknow variable");
+	_variables.erase(variable);
+	
+	// Update json session
+	Json::Value remove_variable;
+	remove_variable["remove_variable"] = name;
+	_json_session["changes"].append(remove_variable);
+}
+
+void Interpreter::clear_variables()
+{
+	// Clear variables
+	_variables.clear();
+
+	// Update json session
+	_json_session["changes"].append("clear_variables");
+}
+
 void Interpreter::add_constraint(const std::string & constraint)
 {
 	// Add constraint
-	if (_cling_interpeter->execute("space->" + constraint + ";") != cling::Interpreter::kSuccess)
-		throw Exception("Failed to add constraint");
+	if (failed(_cling_interpreter->execute("space->" + constraint + ";")))
+		throw Exception("Failed to update space");
 
 	// Update json session
-	_json_session["add_constraint"].append(constraint);
+	Json::Value add_constraint;
+	add_constraint["add_constraint"] = constraint;
+	_json_session["changes"].append(add_constraint);
+}
+
+void Interpreter::remove_constraint(const std::string & constraint)
+{
+	// Remove constraint
+	const std::string constraint_name(constraint.substr(0, constraint.find('#')));
+	if 
+	(
+		failed
+		(
+			_cling_interpreter->execute
+			(
+				R"EOF(
+for (auto it = space->get_)EOF" + constraint_name + R"EOF(_store().begin(); it != space->get_)EOF" + constraint_name + R"EOF(_store().end(); ++it)
+	if (it.to_string() == ")EOF" + constraint + R"EOF(")
+		it.kill();
+				)EOF"
+			)
+		)
+	)
+		throw Exception("Failed to update space");
+	;
+
+	// Update json session
+	Json::Value remove_constraint;
+	remove_constraint["remove_constraint"] = constraint;
+	_json_session["changes"].append(remove_constraint);
+}
+
+void Interpreter::clear_store()
+{
+	// Update json session
+	Json::Value changes(Json::arrayValue);
+	for (auto change(_json_session["changes"].begin()); change != _json_session["changes"].end(); ++change)
+		if (!(*change).isMember("add_constraint") && !(*change).isMember("remove_constraint"))
+			changes.append(*change);
+	_json_session["changes"] = changes;
+
+	// Forced to start new session
+	// Because AllowRedefinition and unload doesn't work for space files (see https://github.com/root-project/cling/issues/318)
+	new_session(_json_session);
 }
 
 bool Interpreter::has_session() const
 {
-	return _cling_interpeter != nullptr;
+	return _cling_interpreter != nullptr;
 }
 
 std::vector<std::pair<std::string, std::string>> Interpreter::variables_values() const
@@ -162,7 +202,8 @@ std::vector<std::pair<std::string, std::string>> Interpreter::variables_values()
 	cling::Value value;
 	for (const std::string & name: _variables)
 	{
-		_cling_interpeter->process(name + ".to_string();", &value);
+		if (failed(_cling_interpreter->process(name + ".to_string();", &value)))
+			throw Exception("Failed to get variable value");
 		variables_values.emplace_back(name, *(std::string*)value.getPtr());
 	}
 	return variables_values;
@@ -172,8 +213,9 @@ std::vector<std::string> Interpreter::constraint_store() const
 {
 	// Get gonstraints in a string
 	cling::Value value;
-	_cling_interpeter->process("constraints(*space);", &value);
-	 return *(std::vector<std::string>*)value.getPtr();
+	if (failed(_cling_interpreter->process("constraints(*space);", &value)))
+		throw Exception("Failed to get constraint store");
+	return *(std::vector<std::string>*)value.getPtr();
 }
 
 const Json::Value & Interpreter::json_session() const
@@ -181,27 +223,27 @@ const Json::Value & Interpreter::json_session() const
 	return _json_session;
 }
 
-void Interpreter::new_session(const Json::Value & json_session)
+void Interpreter::new_session(const Json::Value json_session)
 {
 	// Start a new session
 	new_session();
 
 	// Save cpp space to a file
-	const std::string cpp_path(config::path::chr_spaces + "/space.cpp");
 	std::ofstream cpp_file(cpp_path);
 	cpp_file << json_session["cpp_space"].asString();
 	cpp_file.close();
 
 	// Define the given CHR space
-	define_cpp_space(cpp_path, json_session["space_name"].asString());
+	define_cpp_space(json_session["space_name"].asString());
 
-	// Add variables
-	for (const Json::Value & variable: json_session["add_variable"])
-		add_variable(variable["type"].asString(), variable["name"].asString(), variable["mutable"].asBool());
-	
-	// Add constraints
-	for (const Json::Value & constraint: json_session["add_constraint"])
-		add_constraint(constraint.asString());
+	// Apply changes
+	for (const Json::Value & change: json_session["changes"])
+		if (change.isMember("add_constraint"))
+			add_constraint(change["add_constraint"].asString());
+		else if (change.isMember("remove_constraint"))
+			remove_constraint(change["remove_constraint"].asString());
+		else if (change.isMember("add_variable"))
+			add_variable(change["add_variable"]["type"].asString(), change["add_variable"]["name"].asString(), change["add_variable"]["mutable"].asBool());		
 	
 	// Update json session
 	_json_session = json_session;
@@ -218,5 +260,13 @@ const char * Interpreter::_cling_argv[]
 	"-D ENABLE_STATISTICS",
 	"-fno-exceptions",
 	"-fno-inline",
-	"-std=c++17"
+	"-std=c++17",
+	NULL
 };
+
+const std::string Interpreter::cpp_path(config::path::chr_spaces + "/space.cpp");
+
+bool Interpreter::failed(cling::Interpreter::CompilationResult compilationResult)
+{
+	return compilationResult != cling::Interpreter::kSuccess;
+}

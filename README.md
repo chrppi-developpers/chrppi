@@ -33,7 +33,7 @@ More information on the [LERIA wiki](https://wiki.leria.univ-angers.fr/ua_member
 ./env/inspect.sh
 ./build.sh
 exit
-sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" app/.env
+sed --in-place --regexp-extended "s/(INTERNAL_PORT=).*/\180/" app/.env
 ```
 
 ### Upload the app to LERIA
@@ -54,19 +54,40 @@ scp chrppi.tgz root@etud-kvm-viallard:~
 kvm.connect
 ```
 
-### Set up the KVM container
+### Set up the app
 
 ```bash
-echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
-apt-get install sudo --yes
-useradd user --create-home --shell /bin/bash
-usermod --append --groups sudo user
-passwd --delete user
-mv chrppi.tgz /home/user
-su --login user
 tar --verbose --extract --gzip --file chrppi.tgz
 sudo rm chrppi.tgz
+mv chrppi /media/user
+cd /media/user/third-party
+apt install cmake --yes
+cmake --install llvm/build
+cmake --install chrpp/build
+cd ..
+sed --in-place 's/bullseye/bookworm/' /etc/apt/sources.list
+apt update
+export DEBIAN_FRONTEND=noninteractive && apt upgrade --yes
+apt install g++ --yes
 ```
+
+### execute the app as root
+
+```bash
+./execute.sh
+```
+
+### Access to the app
+
+Got to https://etud-kvm-viallard.leria-etud.univ-angers.fr
+
+## Rootfull Podman deployment
+
+Deploy the app on any server with Podman in rootfull mode.
+
+Use this method when you can't modify network routing.
+
+Else, use rootless Podman deployment.
 
 ### Build and copy the app
 
@@ -85,15 +106,15 @@ sudo ./inspect.sh
 ./execute.sh
 ```
 
-## Rootless deployment
+## Rootless Podman deployment
 
-LERIA deployment use root because leria only expose port 80 and we can't modify network routing.
+Deploy the app on any server with Podman in rootless mode.
+
+Rootfull deployment is needed when we can't modify network routing.
 
 However, rootless deployement is more secure on most systems.
 
-LERIA deployment is secure despite being rootful because podman runs in a Kernel-based Virtual Machine isolated from starwars.
-
-To run the server in rootless mode you will need to select a registered or dynamic ports (a number between 1024 and 65535).
+To run the app in rootless mode you will need to select a registered or dynamic ports (a number between 1024 and 65535).
 
 ### Set external port
 
@@ -118,7 +139,3 @@ Then build and run the app with the current user on the select port.
 ./env/build.sh
 ./env/run.sh
 ```
-
-### Access to the app
-
-Got to https://etud-kvm-viallard.leria-etud.univ-angers.fr

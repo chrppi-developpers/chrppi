@@ -15,11 +15,11 @@ class Index:
 			PATH_ADD("/upload_session", drogon::Get, drogon::Post);
 		PATH_LIST_END
 
-  		void asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::function<void(const drogon::HttpResponsePtr &)> && callback) override;
+		void asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::function<void(const drogon::HttpResponsePtr &)> && callback) override;
 
 	private:
 
-  		void add_error(drogon::HttpViewData & data, const std::string & error);
+		void add_error(drogon::HttpViewData & data, const std::string & error);
 
 		Interpreter _interpreter;
 };
