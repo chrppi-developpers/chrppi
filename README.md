@@ -54,16 +54,25 @@ scp chrppi.tgz root@etud-kvm-viallard:~
 kvm.connect
 ```
 
-### Set up the app
+### Extract the app
 
 ```bash
 tar --verbose --extract --gzip --file chrppi.tgz
 sudo rm chrppi.tgz
 mv chrppi /media/user
+```
+### Install third-party
+
+```bash
 cd /media/user/third-party
 apt install cmake --yes
 cmake --install llvm/build
 cmake --install chrpp/build
+```
+
+### Install required Debian packages
+
+```bash
 cd ..
 sed --in-place 's/bullseye/bookworm/' /etc/apt/sources.list
 apt update
@@ -89,14 +98,25 @@ Use this method when you can't modify network routing.
 
 Else, use rootless Podman deployment.
 
+### Set ports
+
+```bash
+cd app
+sed --in-place --regexp-extended "s/(INTERNAL_PORT=).*/\18080/" .env
+sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" .env
+```
+
+### Install and configure Podman
+
+```bash
+sudo apt-get install podman --yes
+sudo loginctl enable-linger $USER
+```
+
 ### Build and copy the app
 
 ```bash
-sed --in-place --regexp-extended "s/(INTERNAL_PORT=).*/\18080/" app/.env
-sed --in-place --regexp-extended "s/(EXTERNAL_PORT=).*/\180/" app/.env
-cd env
-sudo apt-get install podman --yes
-sudo loginctl enable-linger $USER
+cd ../env
 ./build.sh
 ./root_copy.sh
 ```
@@ -140,14 +160,19 @@ sudo iptables -t nat -I OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j REDIRECT --to-p
 sudo iptables -t nat -I PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports $port
 ```
 
+### Install and configure Podman
+
+```bash
+sudo apt-get install podman --yes
+sudo loginctl enable-linger $USER
+```
+
 ### Build and run the app
 
 Then build and run the app with the current user on the select port.
 
 ```bash
 cd env
-sudo apt-get install podman --yes
-sudo loginctl enable-linger $USER
 ./build.sh
 ./run.sh
 ```
