@@ -57,13 +57,13 @@ kvm.connect
 
 ```bash
 tar --verbose --extract --gzip --file chrppi.tgz
-sudo rm chrppi.tgz
+rm chrppi.tgz
 mv chrppi /media/user
 ```
 ### Install third-party
 
 ```bash
-cd /media/user/third-party
+cd /media/user/app/third-party
 apt install cmake --yes
 cmake --install llvm/build
 cmake --install chrpp/build
