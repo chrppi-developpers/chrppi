@@ -26,8 +26,8 @@ void Interpreter::new_session()
 	_json_session["changes"] = Json::arrayValue;
 
 	// Create a new cling session
-	_cling_interpreter = std::make_shared<cling::Interpreter>(argc(_cling_argv), _cling_argv, config::path::llvm_build.c_str());
-	
+	_cling_interpreter = std::make_shared<cling::Interpreter>(argc(_cling_argv), _cling_argv, config::file::llvm_build.c_str());
+
 	// Allow to print a space
 	if (failed(_cling_interpreter->declare("#include <iostream>")))
 		throw Exception("Failed to start CHR session");
@@ -39,8 +39,8 @@ void Interpreter::new_session()
 	_cling_interpreter->setDefaultOptLevel(3);
 
 	// Include chrpp sources
-	_cling_interpreter->AddIncludePath(config::path::chrpp_source + "/runtime");
-	_cling_interpreter->AddIncludePath(config::path::chrpp_build + "/runtime");
+	_cling_interpreter->AddIncludePath(config::file::chrpp_source + "/runtime");
+	_cling_interpreter->AddIncludePath(config::file::chrpp_build + "/runtime");
 }
 
 void Interpreter::define_cpp_space(const std::string & space_name)
@@ -60,7 +60,7 @@ void Interpreter::define_space(const std::string & chr_path)
 	new_session();
 
 	// Compile space definition to C++ with chrppc
-	if (std::system((config::path::chrpp_build + "/chrppc/chrppc --stdout " + chr_path + " > " + cpp_path).c_str()) != 0)
+	if (std::system((config::file::chrpp_build + "/chrppc/chrppc --stdout " + chr_path + " > " + cpp_path).c_str()) != 0)
 		throw Exception("Failed to compile CHR space");
 
 	// Append print function to C++ file
@@ -264,7 +264,7 @@ const char * Interpreter::_cling_argv[]
 	NULL
 };
 
-const std::string Interpreter::cpp_path(config::path::chr_spaces + "/space.cpp");
+const std::string Interpreter::cpp_path(config::file::chr_spaces + "/space.cpp");
 
 bool Interpreter::failed(cling::Interpreter::CompilationResult compilationResult)
 {

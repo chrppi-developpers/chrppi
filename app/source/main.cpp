@@ -24,7 +24,7 @@ int main()
 		.setDocumentRoot(config::main::document_root)
         .setUploadPath(config::main::upload_path)
 		.enableSession(config::main::session_timeout)
-		.setClientMaxBodySize(config::main::client_max_body_size)
+		.setThreadNum(config::main::threads)
 	;
 
 	// Run the app

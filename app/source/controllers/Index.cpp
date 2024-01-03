@@ -5,40 +5,56 @@
 #include <regex>
 
 #include "Index.hh"
-#include "../config.hh"
-#include "../interpreter/interpreter.hh"
 
 namespace fs = std::filesystem;
+
+std::string to_string(drogon::HttpMethod httpMethod)
+{
+	switch (httpMethod)
+	{
+		case drogon::Get:	return "GET";
+    	case drogon::Post:	return "POST";
+    	default:			return std::to_string(httpMethod);
+	}
+}
 
 void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::function<void(const drogon::HttpResponsePtr &)> && callback)
 {
 	drogon::HttpViewData data;
 	drogon::HttpResponsePtr resp(nullptr);
 
+	LOG_INFO
+		<< "[thread " << std::distance(_interpreter_pool.begin(), _interpreter_pool.find(std::this_thread::get_id())) + 1 
+		<< "] session @" << req->session()->sessionId() << ": " << to_string(req->getMethod()) << " " << req->getPath(); 
+/*
 	// Interpreter is not set for current session (new session)
 	if (!req->session()->find(config::session::interpreter))
 		req->session()->insert(config::session::interpreter, std::make_shared<Interpreter>());
 
 	// Get session interpreter
 	Interpreter & interpreter(*req->session()->get<std::shared_ptr<Interpreter>>(config::session::interpreter));
+*/
+	// Get interpreter corresponding to current thread
+	Interpreter & interpreter(_interpreter_pool[std::this_thread::get_id()]);
+
+	// Get back user session
+	{
+		std::optional<Json::Value> json_session(req->session()->getOptional<Json::Value>(config::session::json));
+		if (json_session)
+			interpreter.new_session(*json_session);
+	}
 
 	// Index
-	if (req->getPath() == "/")
+	if (req->getPath() == config::url::root)
 	{
 		// Load an example
 		if (!req->getParameter(config::html::select_example).empty())
 		{
-			std::ifstream chr_file(config::path::chr_examples + "/" + req->getParameter(config::html::select_example));
+			std::ifstream chr_file(config::file::chr_examples + "/" + req->getParameter(config::html::select_example));
 			if (chr_file.is_open())
 			{
-				// Update HTML
-				std::stringstream file_stream;
-				file_stream << chr_file.rdbuf();
-				req->session()->erase(config::session::chr_code);
-				req->session()->insert(config::session::chr_code, file_stream.str());
-
 				// Define space
-				try { interpreter.define_space(config::path::chr_examples + "/" + req->getParameter(config::html::select_example)); }
+				try { interpreter.define_space(config::file::chr_examples + "/" + req->getParameter(config::html::select_example)); }
 				catch (const Interpreter::Exception & exception)
 				{ add_error(data, "Unable to load example (" + exception.what() + ")"); }
 			}
@@ -52,16 +68,12 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		{
 			if (!req->getParameter(config::html::chr_code).empty())
 			{
-				const std::string chr_path(config::path::chr_spaces + "/space.txt");
+				const std::string chr_path(config::file::chr_spaces + "/space.txt");
 				std::ofstream chr_file(chr_path, std::ios::binary);
 				if (chr_file.is_open())
 				{
 					// Get CHR code without cariage return characters added by textarea
 					std::string chr_code(std::regex_replace(req->getParameter(config::html::chr_code), std::regex {"\r\n"}, "\n"));
-
-					// Update HTML
-					req->session()->erase(config::session::chr_code);
-					req->session()->insert(config::session::chr_code, chr_code);
 
 					// Write and close CHR file
 					chr_file << chr_code;
@@ -164,7 +176,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		fs::path path;
 		std::string file_name;
 		std::vector<std::string> chr_examples;
-		for (fs::directory_entry directory: fs::directory_iterator(config::path::chr_examples))
+		for (fs::directory_entry directory: fs::directory_iterator(config::file::chr_examples))
 		{
 			path = directory.path();
 			chr_examples.push_back(path.filename());
@@ -182,18 +194,25 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		catch (const Interpreter::Exception & exception)
 		{ add_error(data, "Cannot get variables (" + exception.what() + ")"); }
 
-		// Send CHR code from session
-		data[config::html::chr_code] = req->session()->get<std::string>(config::session::chr_code);
+		// Send CHR code to HTML
+		data[config::html::chr_code] = interpreter.space();
 
 		// Default behavior is to return the view with data
 		if (resp == nullptr)
 			resp = drogon::HttpResponse::newHttpViewResponse("index_view", data);
 
+		// Update json session
+		if (interpreter.has_session())
+		{
+			req->session()->erase(config::session::json);
+			req->session()->insert(config::session::json, interpreter.json_session());
+		}
+
 		callback(resp);
 	}
 
 	// Upload a session
-	else if (req->getPath() == "/upload_session")
+	else if (req->getPath() == config::url::upload_session)
 	{
 		drogon::MultiPartParser file_upload;
 
@@ -213,14 +232,17 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 				try { interpreter.new_session(json_session); }
 				catch (const Interpreter::Exception & exception)
 				{ add_error(data, "Cannot upload session (" + exception.what() + ")"); }
-
-				// Update CHR editor
-				req->session()->erase(config::session::chr_code);
-				req->session()->insert(config::session::chr_code, interpreter.space());
 			}
  
 			else
 				add_error(data, "Uploaded session could not be parsed");
+		}
+
+		// Update json session
+		if (interpreter.has_session())
+		{
+			req->session()->erase(config::session::json);
+			req->session()->insert(config::session::json, interpreter.json_session());
 		}
 
 		// Redirect to index

@@ -1,5 +1,6 @@
 #pragma once
-#include<string>
+
+#include <string>
 
 // Set constants used in code
 namespace config
@@ -10,12 +11,19 @@ namespace config
 		const std::string ip("0.0.0.0");
 		const std::string document_root("document_root");
 		const std::string upload_path("uploads");
-		const int session_timeout(500000);
-		const size_t client_max_body_size(20 * 2000 * 2000);
+		const int session_timeout(3600);
+		const size_t threads(5);
 	}
 
-	// Paths of files
-	namespace path
+	// Path of URLs
+	namespace url
+	{
+		const std::string root("/");
+		const std::string upload_session("/upload_session");
+	}
+
+	// Path of files
+	namespace file
 	{
 		const std::string chr_spaces("chr_spaces");
 		const std::string chr_examples("chr_spaces/examples");
@@ -57,7 +65,6 @@ namespace config
 	// Session keys
 	namespace session
 	{
-		const std::string interpreter("session");
-		const std::string chr_code("chr_code");
+		const std::string json("json");
 	}
 };
