@@ -115,7 +115,7 @@ std::vector<std::string> constraints(T & pb)
 	std::remove(cpp_space_path.c_str());
 }
 
-void Interpreter::add_variable(const std::string & type, const std::string & name, bool mutable_)
+void Interpreter::add_variable(const std::string & type, const std::string & name, bool mutable_, const std::optional<std::string> & value)
 {
 	// Update removed variable
 	if (_removed_variables.find(name) == _removed_variables.end())
@@ -125,6 +125,11 @@ void Interpreter::add_variable(const std::string & type, const std::string & nam
 	if (failed(_cling_interpreter->declare("chr::Logical_var" + std::string {mutable_ ? "_mutable" : ""} + "<" + type + "> " + full_variable_name(name) + ";")))
 		throw Exception("Failed to declare variable");
 
+	// Set initial value
+	if (value)
+		if (failed(_cling_interpreter->declare(full_variable_name(name) + " %= " + *value + ";")))
+			throw Exception("Failed to assign initial value");
+
 	// Update variable declaration
 	_variables_declaration.emplace_back(type, name);
 
@@ -133,6 +138,8 @@ void Interpreter::add_variable(const std::string & type, const std::string & nam
 	add_variable["add_variable"]["type"] = type;
 	add_variable["add_variable"]["name"] = name;
 	add_variable["add_variable"]["mutable"] = mutable_;
+	if (value)
+		add_variable["add_variable"]["value"] = *value;
 	_json_session["changes"].append(add_variable);
 }
 
@@ -293,7 +300,17 @@ void Interpreter::new_session(const Json::Value json_session)
 		else if (change.isMember("clear_store"))
 			clear_store();
 		else if (change.isMember("add_variable"))
-			add_variable(change["add_variable"]["type"].asString(), change["add_variable"]["name"].asString(), change["add_variable"]["mutable"].asBool());
+			add_variable
+			(
+				change["add_variable"]["type"].asString(), 
+				change["add_variable"]["name"].asString(), 
+				change["add_variable"]["mutable"].asBool(),
+					change["add_variable"].isMember("value")
+				?
+					std::optional<std::string> {change["add_variable"]["value"].asString()}
+				:
+					std::nullopt
+			);
 		else if (change.isMember("remove_variable"))
 			remove_variable(change["remove_variable"].asString());
 		else if (change.isMember("clear_variables"))

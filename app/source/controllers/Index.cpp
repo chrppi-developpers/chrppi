@@ -101,11 +101,18 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		{
 			if (req_parameter.find(config::html::add_constraint_value) != req_parameter.end())
 			{
-				if (!req_parameter.find(config::html::add_constraint_value)->second.empty())
+				if (req_parameter.find(config::html::add_constraint_value) != req_parameter.end())
 				{
-					try { interpreter.add_constraint(req_parameter.find(config::html::add_constraint_value)->second); }
-					catch (const Interpreter::Exception & exception)
-					{ append_error("Unable to add constraint (" + exception.what() + ")", data, json_response); }
+					if (interpreter.has_session())
+					{
+						try { interpreter.add_constraint(req_parameter.find(config::html::add_constraint_value)->second); }
+						catch (const Interpreter::Exception & exception)
+						{ append_error("Unable to add constraint (" + exception.what() + ")", data, json_response); }
+					}
+					
+					// Interpreter must have a session
+					else
+						append_error("You must commpile a CHR space first", data, json_response);
 				}
 				else
 					append_error("Constraint is empty ", data, json_response);				
@@ -164,7 +171,8 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 							(
 								req_parameter.find(config::html::variable_type)->second, 
 								req_parameter.find(config::html::variable_name)->second, 
-								req_parameter.find(config::html::variable_mutable)->second == "true"
+								req_parameter.find(config::html::variable_mutable)->second == "true",
+								variable_value
 							);
 						}
 						catch (const Interpreter::Exception & exception)

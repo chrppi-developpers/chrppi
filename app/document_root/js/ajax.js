@@ -55,15 +55,23 @@ document.getElementById(id.variable_value).disabled = !document.getElementById(i
 
 function send(data, url, download_file=false) 
 {
-	// Set cursor style to wait until getting response
+	// Set loading animations
 	document.body.style.cursor = 'wait';
+	if (data[id.compile])
+		document.getElementById(id.compile).classList.add('is-loading');
+	else if (data[id.select_example])
+		document.getElementById(id.select_example).parentNode.classList.add('is-loading');
 
 	// Create XHR request
 	const XHR = new XMLHttpRequest();	
 	XHR.onload = function()
 	{
-		// Reset cursor style to default
+		// Unset loading animations
 		document.body.style.cursor = 'default';
+		if (data[id.compile])
+			document.getElementById(id.compile).classList.remove('is-loading');
+		else if (data[id.select_example])
+			document.getElementById(id.select_example).parentNode.classList.remove('is-loading');
 
 		if (XHR.status >= 200 && XHR.status < 300)
 		{
@@ -257,12 +265,6 @@ function ajax_data()
   data[id.ajax_request] = 'true';
   return data;
 }
-  
-// Return the data associated by the id
-function gather_data(data_id)
-{
-  return document.getElementById(data_id).value;
-}
 
 // Add contraint
 document.getElementById(id.add_constraint).addEventListener
@@ -271,7 +273,7 @@ document.getElementById(id.add_constraint).addEventListener
 	(event) => 
 	{
 		data = ajax_data();
-		data[id.add_constraint_value] = gather_data(id.add_constraint_value);
+		data[id.add_constraint_value] = document.getElementById(id.add_constraint_value).value;
 		data[id.add_constraint] = 'true';
 		send(data, '/');
   	}
@@ -284,7 +286,7 @@ document.getElementById(id.select_example).addEventListener
 	(event) => 
 	{
 		data = ajax_data();
-		data[id.select_example] = gather_data(id.select_example);
+		data[id.select_example] = document.getElementById(id.select_example).value;
 		send(data, '/');
 	}
 )
@@ -292,12 +294,13 @@ document.getElementById(id.select_example).addEventListener
 // Compile
 document.getElementById(id.compile).addEventListener
 (
-	'click', 
+	'click',
 	(event) => 
 	{
 		data = ajax_data();
 		data[id.compile] = true;
-		data[id.chr_code] = gather_data(id.chr_code);
+		data[id.chr_code] = document.getElementById(id.chr_code).value;
+		console.log(data);
 		send(data, '/');
 	}
 )
@@ -336,10 +339,10 @@ document.getElementById(id.add_variable).addEventListener
 		data = ajax_data();
 		data[id.add_variable] = true;
 		data[id.variable_mutable] = document.getElementById(id.variable_mutable).checked;
-		data[id.variable_name] = gather_data(id.variable_name);
-		data[id.variable_type] = gather_data(id.variable_type);
-		if (document.getElementById(id.variable_mutable).checked)
-			data[id.variable_value] = gather_data(id.variable_value);
+		data[id.variable_name] = document.getElementById(id.variable_name).value;
+		data[id.variable_type] = document.getElementById(id.variable_type).value;
+		if (document.getElementById(id.variable_mutable).checked && document.getElementById(id.variable_value).value)
+			data[id.variable_value] = document.getElementById(id.variable_value).value;
 		send(data, '/');
 	}
 )

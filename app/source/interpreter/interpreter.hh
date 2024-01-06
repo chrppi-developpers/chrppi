@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include <cling/Interpreter/Interpreter.h>
 
@@ -54,7 +55,7 @@ class Interpreter
 		void define_space(const std::string & chr_path);
 		
 		// Add a logical variable
-		void add_variable(const std::string & type, const std::string & name, bool mutable_);
+		void add_variable(const std::string & type, const std::string & name, bool mutable_, const std::optional<std::string> & value);
 
 		// Remove a logical variable
 		void remove_variable(const std::string & name);

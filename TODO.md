@@ -1,4 +1,3 @@
-- Allow to add a mutable variable with an initial value
 - Fix and add tests
 	- load: test many asynchronous requests
 	- coverage: test all type of requests
