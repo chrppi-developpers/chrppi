@@ -35,31 +35,51 @@ namespace config
 	// Strings used in HTML
 	namespace html
 	{
+		// Error
+		const std::string section_error_hidden("section error hidden");
+		const std::string error_id("error");
+
+		// Load an example
 		const std::string select_example("select example");
+		const std::string disable_option("disable option");
 		const std::string chr_examples("chr examples");
+		
+		// Compile chr code
 		const std::string compile("compile");
+		
+		// CHR code
 		const std::string chr_code("chr code");
 
+		// Download/upload session
 		const std::string download_session("download session");
 		const std::string upload_session("upload session");
 		
+		// Add a constraint
 		const std::string add_constraint_value("add constraint value");
 		const std::string add_constraint("add constraint");
-
-		const std::string constraint_store("constraint store");
-		const std::string remove_constraint("remove constraint");
-		const std::string clear_constraint_store("clear constraint store");
 		
+		// Add a variable
 		const std::string variable_type("variable type");
 		const std::string variable_name("variable name");
 		const std::string variable_mutable("variable mutable");
+		const std::string variable_value("variable value");
+		const std::string field_variable("field variable");
 		const std::string add_variable("add variable");
 
+		// Constraint store
+		const std::string constraint_store("constraint store");
+		const std::string tbody_id("tbody id");
+		const std::string remove_constraint("remove constraint");
+		const std::string clear_constraint_store("clear constraint store");
+
+		// Variables
 		const std::string variables("variables");
+		const std::string tbody_id_variable("tbody id variable");
 		const std::string remove_variable("remove variable");
 		const std::string clear_variables("clear variables");
-
-		const std::string error_id("error");
+		
+		// Ajax request
+		const std::string ajax_request("ajax request");
 	}
 
 	// Session keys

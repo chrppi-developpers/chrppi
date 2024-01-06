@@ -23,6 +23,7 @@ class Index:
 	private:
 
 		void add_error(drogon::HttpViewData & data, const std::string & error);
+		void add_error(Json::Value & json_response, const std::string & error);
 
 		std::map<std::thread::id, Interpreter> _interpreter_pool;
 };

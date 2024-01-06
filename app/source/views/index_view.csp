@@ -7,19 +7,26 @@
 		<title>chrppi</title>
 		<link rel="stylesheet" href="css/bulma.css"/>
 		<script defer src="js/fontawesome.js"></script>
+		<script defer src="js/main.js"></script>
 	</head>
 
 	<body>
-		<%c++
-			const auto & errors(@@.get<std::vector<std::string>>(config::html::error_id));
-			if (!errors.empty())
-			{
-				$$ << "<section class=\"section\"> <div class=\"notification is-danger\"> <p class=\"title\">ERROR</p> <ul>";
-					for (const auto & error: errors)
-						$$ << "<li class=\"subtitle\">" << error << "</li>";
-				$$ << "</ul></div></section>";
-			}
-		%>
+		<section class="section is-hidden" id="{% config::html::section_error_hidden %}"> 
+			<div class="notification is-danger ">
+				
+				<p class="title">ERROR</p> 
+				<ul id="{% config::html::error_id %}">
+				<%c++
+					const auto & errors(@@.get<std::vector<std::string>>(config::html::error_id));
+					if (!errors.empty())
+					{
+						for (const auto & error: errors)
+							$$ << "<li class=\"subtitle\">" << error << "</li>";
+					}
+				%>
+			</ul>
+			</div>
+		</section>
 
 		<section class="section">
 			
@@ -29,12 +36,11 @@
 	
 				<div class="column is-one-two">
 
-					<form method="post">
 						<div class="columns">
 							<div class="column">
 								<div class="select">
-									<select name="{% config::html::select_example %}" onchange="form.submit()">
-										<option selected disabled>Load an example</option>
+									<select id="{% config::html::select_example %}" >
+										<option id="{% config::html::disable_option %}" selected disabled>Load an example</option>
 										<%c++ for (const auto & filename: @@.get<std::vector<std::string>>(config::html::chr_examples)){%>
 											<option value="{% filename %}">{% filename.substr(0, filename.find_last_of(".")) %}</option>
 										<%c++}%>
@@ -42,7 +48,7 @@
 								</div>
 							</div>
 							<div class="column">
-								<button class="button" type="submit" name="{% config::html::compile %}" value="get">
+								<button class="button" type="button" id="{% config::html::compile %}" value="get">
 									<span class="icon is-small">
 										<i class="fas fa-cog"></i>
 									</span>
@@ -50,37 +56,32 @@
 								</button>
 							</div>
 						</div>
-						<textarea class="textarea" name="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="20">{% @@.get<std::string>(config::html::chr_code) %}</textarea>
-					</form>
-
+						<textarea class="textarea" id="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="20">{% @@.get<std::string>(config::html::chr_code) %}</textarea>
+				
 					<div class="field has-addons">
-						<form method="post">
-							<p class="control">
-								<button class="button" type="submit" name="{% config::html::download_session %}" value="get">
-									<span class="icon is-small">
-										<i class="fas fa-download"></i>
-									</span>
-									<span>download session</span>
-								</button>
-							</p>
-						</form>
-					
-						<form method="post" enctype="multipart/form-data" action="upload_session">
-							<p class="control">
-								<div class="file">
-									<label class="file-label">
-										<input class="file-input" type="file" name="{% config::html::upload_session %}" accept=".json" onchange="form.submit()">
-										<span class="file-cta">
-											<span class="file-icon">
-												<i class="fas fa-upload"></i>
-											</span>
-											<span class="file-label">upload session</span>
+						
+						<p class="control">
+							<button class="button" type="button" id="{% config::html::download_session %}" value="get">
+								<span class="icon is-small">
+									<i class="fas fa-download"></i>
+								</span>
+								<span>download session</span>
+							</button>
+						</p>
+						<p class="control">
+							<div class="file">
+								<label class="file-label">
+									<input class="file-input" type="file" id="{% config::html::upload_session %}" accept=".json" >
+									<span class="file-cta">
+										<span class="file-icon">
+											<i class="fas fa-upload"></i>
 										</span>
-									</label>
-								</div>
-							</p>
-						</form>
-
+										<span class="file-label">upload session</span>
+									</span>
+								</label>
+							</div>
+						</p>
+						
 					</div>
 
 				</div>
@@ -88,126 +89,130 @@
 				<div class="column is-one-two">
 					
 					<div class="my-3">
-					<form method="post">
 						<fieldset class="box">
 							<legend class="label has-text-centered">Add a constraint</legend>
 							<div class="field">
 								<label class="label" for="{% config::html::add_constraint_value %}">Constraint</label>
 								<div class="control">
-									<input class="input" type="text" name="{% config::html::add_constraint_value %}">
+									<input class="input" type="text" id="{% config::html::add_constraint_value %}">
 								</div>
 							</div>
 							<div class="field">
 								<div class="control has-text-centered">
-									<input class="button is-primary" type="submit" name="{% config::html::add_constraint %}" value="add" />
+									<input class="button is-primary" type="button" id="{% config::html::add_constraint %}" value="add" />
 								</div>
 							</div>
 						</fieldset>
-					</form>
 					</div>
+					
+					<fieldset class="box">
+						<legend class="label has-text-centered">Add a variable</legend>
+						<div class="field">
+							<label class="label" for="{% config::html::variable_type %}">Type</label>
+							<div class="control">
+								<input class="input" type="text" id="{% config::html::variable_type %}" size="20">
+							</div>
+						</div>
+						<div class="field">
+							<label class="label" for="{% config::html::variable_name %}">Name</label>
+							<div class="control">
+								<input class="input" type="text" id="{% config::html::variable_name %}" size="20">
+							</div>
+						</div>
+						<div class="field">
+							<label class="label">
+								Mutable
+								<input type="checkbox" id="{% config::html::variable_mutable %}">
+							</label>
+						</div>
+						
+						<div class="field is-hidden" id="{% config::html::field_variable %}">
+							<label class="label" for="{% config::html::variable_value %}">Value</label>
+							<div class="control">
+								<input class="input" type="text" id="{% config::html::variable_value %}" size="20">
+							</div>
+						</div>
 
-					<form method="post">
-						<fieldset class="box">
-							<legend class="label has-text-centered">Add a variable</legend>
-							<div class="field">
-								<label class="label" for="{% config::html::variable_type %}">Type</label>
-								<div class="control">
-									<input class="input" type="text" name="{% config::html::variable_type %}" size="20">
-								</div>
+						<div class="field">
+							<div class="control has-text-centered">
+								<input class="button is-primary" type="button" id="{% config::html::add_variable %}" value="add" />
 							</div>
-							<div class="field">
-								<label class="label" for="{% config::html::variable_name %}">Name</label>
-								<div class="control">
-									<input class="input" type="text" name="{% config::html::variable_name %}" size="20">
-								</div>
-							</div>
-							<div class="field">
-								<label class="label">
-									Mutable
-									<input type="checkbox" name="{% config::html::variable_mutable %}">
-								</label>
-							</div>
-							<div class="field">
-								<div class="control has-text-centered">
-									<input class="button is-primary" type="submit" name="{% config::html::add_variable %}" value="add" />
-								</div>
-							</div>
-						</fieldset>
-					</form>
+						</div>
 
+					</fieldset>
+					
 				</div>
 			</div>
 
 			<div class="columns is-multiline is-centered">
 				
 				<div class="column is-one-two">
-					<form method="post">
-						<fieldset class="box">
-							<legend class="label has-text-centered">Constraint store</legend>
-							<table class="table is-fullwidth">
-								<thead>
-								  <tr>
-									<th>constraint</th>
-								  </tr>
-								</thead>
-								<tbody>
-									<%c++ for (const auto & constraint: @@.get<std::vector<std::string>>(config::html::constraint_store)){%>
-										<tr>
-											<td>
-												<button class="button is-danger" type="submit" name="{% config::html::remove_constraint %}" value="{% constraint %}">
-													<span class="icon is-small">
-														<i class="fas fa-times"></i>
-													</span>
-												</button>
-												{% constraint %}
-											</td>
-										</tr>
-									<%c++}%>
-								</tbody>
-							</table>
-							<div class="field">
-								<div class="control has-text-centered">
-									<input class="button is-danger" type="submit" name="{% config::html::clear_constraint_store %}" value="clear" />
-								</div>
+					<fieldset class="box">
+						<legend class="label has-text-centered">Constraint store</legend>
+						<table class="table is-fullwidth">
+							<thead>
+							  <tr>
+								<th>constraint</th>
+							  </tr>
+							</thead>
+							<tbody id="{% config::html::tbody_id %}">
+								<%c++ for (const auto & constraint: @@.get<std::vector<std::string>>(config::html::constraint_store)){%>
+									<tr>
+										<td>
+											<button class="button is-danger" type="button" name="{% config::html::remove_constraint %}" value="{% constraint %}">
+												<span class="icon is-small">
+													<i class="fas fa-times"></i>
+												</span>
+											</button>
+											{% constraint %}
+										</td>
+									</tr>
+								<%c++}%>
+							</tbody>
+						</table>
+						<div class="field">
+							<div class="control has-text-centered">
+								<input class="button is-danger" type="button" id="{% config::html::clear_constraint_store %}" value="clear" />
 							</div>
-						</fieldset>
-					</form>
+						</div>
+					</fieldset>
+					
 				</div>
 
 				<div class="column is-one-two">
-					<form method="post">
-						<fieldset class="box">
-							<legend class="label has-text-centered">Variables</legend>
-							<table class="table is-fullwidth">
-								<thead>
+					
+					<fieldset class="box">
+						<legend class="label has-text-centered">Variables</legend>
+						<table class="table is-fullwidth">
+							<thead>
+								<tr>
+									<th>variable</th>
+									<th>value</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="{% config::html::tbody_id_variable %}">
+								<%c++ for (const auto & variable: @@.get<std::vector<std::pair<std::string, std::string>>>(config::html::variables)){%>
 									<tr>
-										<th>variable</th>
-										<th>value</th>
+										<td>
+											<button class="button is-danger" type="button" name="{% config::html::remove_variable %}" value="{% variable.first %}">
+												<span class="icon is-small">
+													<i class="fas fa-times"></i>
+												</span>
+											</button>
+											{%  variable.first %}
+										</td>
+										<td>{% variable.second %}</td>
 									</tr>
-								</thead>
-								<tbody>
-									<%c++ for (const auto & variable: @@.get<std::vector<std::pair<std::string, std::string>>>(config::html::variables)){%>
-										<tr>
-											<td>
-												<button class="button is-danger" type="submit" name="{% config::html::remove_variable %}" value="{% variable.first %}">
-													<span class="icon is-small">
-														<i class="fas fa-times"></i>
-													</span>
-												</button>
-												{%  variable.first %}
-											</td>
-											<td>{% variable.second %}</td>
-										</tr>
-									<%c++}%>
-								</tbody>
-							</table>
-							<div class="field">
-								<div class="control has-text-centered">
-									<input class="button is-danger" type="submit" name="{% config::html::clear_variables %}" value="clear" />
-								</div>
+								<%c++}%>
+							</tbody>
+						</table>
+						<div class="field">
+							<div class="control has-text-centered">
+								<input class="button is-danger" type="button" id="{% config::html::clear_variables %}" value="clear" />
 							</div>
-						</fieldset>
-					</form>
+						</div>
+					</fieldset>
 				</div>
 
 			</div>
