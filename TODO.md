@@ -1,4 +1,8 @@
+- Allow to add a mutable variable with an initial value
 - Fix and add tests
+	- load: test many asynchronous requests
+	- coverage: test all type of requests
+	- consistency: test if returned data is valid (json session)
 - pre-compile examples
 - test if simulaneous requests of same session cause errors or sefault and correct code if it happens
 - add tests in compilation process

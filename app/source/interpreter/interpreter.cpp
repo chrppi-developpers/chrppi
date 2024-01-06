@@ -21,8 +21,8 @@ std::string Interpreter::cpp_space_path() const
 
 void Interpreter::new_session()
 {
-	// Empty stored variables definition
-	_variables_definition.clear();
+	// Empty stored variables declaration
+	_variables_declaration.clear();
 
 	// Empty removed variables
 	_removed_variables.clear();
@@ -125,8 +125,8 @@ void Interpreter::add_variable(const std::string & type, const std::string & nam
 	if (failed(_cling_interpreter->declare("chr::Logical_var" + std::string {mutable_ ? "_mutable" : ""} + "<" + type + "> " + full_variable_name(name) + ";")))
 		throw Exception("Failed to declare variable");
 
-	// Update variable definition
-	_variables_definition.emplace_back(type, name);
+	// Update variable declaration
+	_variables_declaration.emplace_back(type, name);
 
 	// Update json session
 	Json::Value add_variable;
@@ -139,21 +139,21 @@ void Interpreter::add_variable(const std::string & type, const std::string & nam
 void Interpreter::remove_variable(const std::string & name)
 {
 	// Update variables definition
-	auto variable_definition
+	auto variable_declaration
 	(
 		std::find_if
 		(
-			_variables_definition.begin(), 
-			_variables_definition.end(), 
-			[&name](const Variable_definition & variable_definition_)
+			_variables_declaration.begin(), 
+			_variables_declaration.end(), 
+			[&name](const Variable_declaration & variable_declaration_)
 			{
-				return variable_definition_.name == name;
+				return variable_declaration_.name == name;
 			}
 		)
 	);
-	if (variable_definition == _variables_definition.end())
+	if (variable_declaration == _variables_declaration.end())
 		throw Exception("Unknow variable");
-	_variables_definition.erase(variable_definition);
+	_variables_declaration.erase(variable_declaration);
 	
 	// Update removed variable
 	++_removed_variables[name];
@@ -167,11 +167,11 @@ void Interpreter::remove_variable(const std::string & name)
 void Interpreter::clear_variables()
 {
 	// Update removed variable
-	for (const Variable_definition & variable_definition: _variables_definition)
-		++_removed_variables[variable_definition.name];
+	for (const Variable_declaration & variable_declaration: _variables_declaration)
+		++_removed_variables[variable_declaration.name];
 
-	// Clear variables definition
-	_variables_definition.clear();
+	// Clear variables declaration
+	_variables_declaration.clear();
 
 	// Update json session
 	_json_session["changes"].append("clear_variables");
@@ -240,17 +240,17 @@ bool Interpreter::has_session() const
 	return _cling_interpreter != nullptr;
 }
 
-std::vector<Interpreter::Variable_value> Interpreter::variables_value() const
+std::vector<Interpreter::Variable_definition> Interpreter::variables_definition() const
 {
-	std::vector<Variable_value> variables_values;
+	std::vector<Variable_definition> variables_definition;
 	cling::Value value;
-	for (const Variable_definition & variable_definition: _variables_definition)
+	for (const Variable_declaration & variable_declaration: _variables_declaration)
 	{
-		if (failed(_cling_interpreter->process(full_variable_name(variable_definition.name) + ".to_string();", &value)))
+		if (failed(_cling_interpreter->process(full_variable_name(variable_declaration.name) + ".to_string();", &value)))
 			throw Exception("Failed to get variable value");
-		variables_values.emplace_back(variable_definition, *(std::string*)value.getPtr());
+		variables_definition.emplace_back(variable_declaration, *(std::string*)value.getPtr());
 	}
-	return variables_values;
+	return variables_definition;
 }
 
 std::vector<std::string> Interpreter::constraint_store() const

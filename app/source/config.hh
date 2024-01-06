@@ -63,7 +63,6 @@ namespace config
 		const std::string variable_name("variable name");
 		const std::string variable_mutable("variable mutable");
 		const std::string variable_value("variable value");
-		const std::string field_variable("field variable");
 		const std::string add_variable("add variable");
 
 		// Constraint store

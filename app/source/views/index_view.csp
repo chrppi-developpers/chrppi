@@ -1,6 +1,9 @@
 <%c++ // Only view of chrppi %>
 
-<%inc #include "../source/config.hh" %>
+<%inc 
+	#include "../source/config.hh"
+	#include "../source/interpreter/interpreter.hh" 
+%>
 
 <!DOCTYPE html>
 <html>
@@ -10,7 +13,7 @@
 		<title>chrppi</title>
 		<link rel="stylesheet" href="css/bulma.css"/>
 		<script defer src="js/fontawesome.js"></script>
-		<script defer src="js/main.js"></script>
+		<script defer src="js/ajax.js"></script>
 	</head>
 
 	<body>
@@ -81,7 +84,7 @@
 			<div class="columns is-multiline is-centered">
 	
 				<div class="column is-one-two">
-						<textarea class="textarea" id="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="20">[[config::html::chr_code]]</textarea>
+						<textarea class="textarea" id="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="20">{% @@.get<std::string>(config::html::chr_code) %}</textarea>
 				</div>
 
 				<div class="column is-one-two">
@@ -108,13 +111,13 @@
 						<div class="field">
 							<label class="label" for="{% config::html::variable_type %}">Type</label>
 							<div class="control">
-								<input class="input" type="text" id="{% config::html::variable_type %}" size="20">
+								<input class="input" type="text" id="{% config::html::variable_type %}">
 							</div>
 						</div>
 						<div class="field">
 							<label class="label" for="{% config::html::variable_name %}">Name</label>
 							<div class="control">
-								<input class="input" type="text" id="{% config::html::variable_name %}" size="20">
+								<input class="input" type="text" id="{% config::html::variable_name %}">
 							</div>
 						</div>
 						<div class="field">
@@ -124,10 +127,10 @@
 							</label>
 						</div>
 						
-						<div class="field is-hidden" id="{% config::html::field_variable %}">
+						<div class="field">
 							<label class="label" for="{% config::html::variable_value %}">Value</label>
 							<div class="control">
-								<input class="input" type="text" id="{% config::html::variable_value %}" size="20">
+								<input class="input" type="text" id="{% config::html::variable_value %}">
 							</div>
 						</div>
 
@@ -154,7 +157,20 @@
 								<th></th>
 							  </tr>
 							</thead>
-							<tbody id="{% config::html::store_body %}"></tbody>
+							<tbody id="{% config::html::store_body %}">
+								<%c++ for (const auto & constraint: @@.get<std::vector<std::string>>(config::html::constraint_store)){%>
+									<tr>
+										<td>{% constraint %}</td>
+										<td>
+											<button class="button is-danger" type="button" name="{% config::html::remove_constraint %}" value="{% constraint %}">
+												<span class="icon is-small">
+													<i class="fas fa-times"></i>
+												</span>
+											</button>
+										</td>
+									</tr>
+								<%c++}%>
+							</tbody>
 						</table>
 						<div class="field">
 							<div class="control has-text-centered">
@@ -178,7 +194,22 @@
 									<th></th>
 								</tr>
 							</thead>
-							<tbody id="{% config::html::variables_body %}"></tbody>
+							<tbody id="{% config::html::variables_body %}">
+								<%c++ for (const auto & variable: @@.get<std::vector<Interpreter::Variable_definition>>(config::html::variables)){%>
+									<tr>
+										<td>{% variable.declaration.type %}</td>
+										<td>{% variable.declaration.name %}</td>
+										<td>{% variable.value %}</td>
+										<td>
+											<button class="button is-danger" type="button" name="{% config::html::remove_variable %}" value="{% variable.declaration.name %}">
+												<span class="icon is-small">
+													<i class="fas fa-times"></i>
+												</span>
+											</button>	
+										</td>
+									</tr>
+								<%c++}%>
+							</tbody>
 						</table>
 						<div class="field">
 							<div class="control has-text-centered">

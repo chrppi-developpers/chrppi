@@ -30,17 +30,17 @@ class Interpreter
 				std::string _what;
 		};
 
-		// Store a logical variable definition
-		struct Variable_definition
+		// Store a logical variable declaration
+		struct Variable_declaration
 		{
 			std::string type;
 			std::string name;
 		};
 
-		// Store a logical variable definition with its value
-		struct Variable_value
+		// Store a logical variable definition
+		struct Variable_definition
 		{
-			Variable_definition variable_definition;
+			Variable_declaration declaration;
 			std::string value;
 		};		
 
@@ -74,8 +74,8 @@ class Interpreter
 		// Return true if there is an active session
 		bool has_session() const;
 
-		// Get logical variables value
-		std::vector<Variable_value> variables_value() const;
+		// Get logical variables definition
+		std::vector<Variable_definition> variables_definition() const;
 
 		// Get Constraint store
 		std::vector<std::string> constraint_store() const;
@@ -112,8 +112,8 @@ class Interpreter
 		// C++ interpreter used to compile CHR statement with chrppc
 		std::shared_ptr<cling::Interpreter> _cling_interpreter;
 
-		// Store logical variables definition
-		std::vector<Variable_definition> _variables_definition;
+		// Store logical variables declarations
+		std::vector<Variable_declaration> _variables_declaration;
 
 		// Count number of time a variable with same name was removed
 		// Allow to remove a variable and use it name to add a new one

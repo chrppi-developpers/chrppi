@@ -31,7 +31,6 @@ let id =
 	add_variable: 'add variable',
 	variable_mutable: 'variable mutable',
 	variable_name: 'variable name',
-	field_variable: 'field variable',
 	variable_value: 'variable value',
 	variable_type: 'variable type',
 
@@ -51,24 +50,8 @@ let id =
 	ajax_request: 'ajax request'
 }
 
-// Onload
-document.getElementById(id.section_error_hidden).classList.remove('is-hidden');
-document.getElementById(id.section_error_hidden).classList.add('is-hidden');
-if (document.getElementById(id.variable_mutable).checked)
-	document.getElementById(id.field_variable).classList.remove('is-hidden');
-else
-{
-	document.getElementById(id.field_variable).classList.remove('is-hidden');
-	document.getElementById(id.field_variable).classList.add('is-hidden');
-}
-
-let store_body = document.getElementById(id.store_body);
-while (store_body.firstChild)
-	store_body.removeChild(store_body.firstChild);
-
-let variables_body = document.getElementById(id.variables_body);
-while (variables_body.firstChild) 
-	variables_body.removeChild(variables_body.firstChild);
+// Disable value field if variable is not mutable
+document.getElementById(id.variable_value).disabled = !document.getElementById(id.variable_mutable).checked;
 
 function send(data, url, download_file=false) 
 {
@@ -365,15 +348,9 @@ document.getElementById(id.add_variable).addEventListener
 document.getElementById(id.variable_mutable).addEventListener
 (
 	'click', 
-	(event) => 
+	(event) =>
 	{
-		if (document.getElementById(id.variable_mutable).checked)
-			document.getElementById(id.field_variable).classList.remove('is-hidden');
-		else
-		{
-			document.getElementById(id.field_variable).classList.remove('is-hidden');
-			document.getElementById(id.field_variable).classList.add('is-hidden');
-		}
+		document.getElementById(id.variable_value).disabled = !document.getElementById(id.variable_mutable).checked;
 	}
 )
 

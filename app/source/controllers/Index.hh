@@ -24,5 +24,7 @@ class Index:
 
 	private:
 
+		static void append_error(const std::string & message, drogon::HttpViewData & data, Json::Value & json_response);
+
 		std::map<std::thread::id, Interpreter> _interpreter_pool;
 };
