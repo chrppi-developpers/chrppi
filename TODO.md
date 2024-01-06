@@ -1,1 +1,4 @@
-- Drogon controller should manage a pool of cling interpreter with a fixed size
+- Fix and add tests
+- pre-compile examples
+- test if simulaneous requests of same session cause errors or sefault and correct code if it happens
+- add tests in compilation process

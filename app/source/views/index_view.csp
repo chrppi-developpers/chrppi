@@ -1,4 +1,7 @@
+<%c++ // Only view of chrppi %>
+
 <%inc #include "../source/config.hh" %>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -15,9 +18,9 @@
 			<div class="notification is-danger ">
 				
 				<p class="title">ERROR</p> 
-				<ul id="{% config::html::error_id %}">
+				<ul id="{% config::html::error %}">
 				<%c++
-					const auto & errors(@@.get<std::vector<std::string>>(config::html::error_id));
+					const auto & errors(@@.get<std::vector<std::string>>(config::html::error));
 					if (!errors.empty())
 					{
 						for (const auto & error: errors)
@@ -29,61 +32,56 @@
 		</section>
 
 		<section class="section">
-			
-			<h1 class="title"><em>chrppi</em></h1>
+
+			<div class="columns">
+				<div class="column is-narrow">
+					<h1 class="title"><em>chrppi</em></h1>
+				</div>
+				<div class="column is-narrow">
+					<div class="select">
+						<select id="{% config::html::select_example %}" >
+							<option id="{% config::html::disable_option %}" selected disabled>Load an example</option>
+							<%c++ for (const auto & filename: @@.get<std::vector<std::string>>(config::html::chr_examples)){%>
+								<option value="{% filename %}">{% filename.substr(0, filename.find_last_of(".")) %}</option>
+							<%c++}%>
+						</select>
+					</div>
+				</div>
+				<div class="column is-narrow">
+					<button class="button" type="button" id="{% config::html::compile %}" value="get">
+						<span class="icon is-small">
+							<i class="fas fa-cog"></i>
+						</span>
+						<span>compile</span>
+					</button>
+				</div>
+				<div class="column is-narrow field has-addons">
+					<p class="control">
+						<button class="button" type="button" id="{% config::html::download_session %}" value="get">
+							<span class="icon is-small">
+								<i class="fas fa-download"></i>
+							</span>
+							<span>download session</span>
+						</button>
+					</p>
+					<div class="control file">
+						<label class="file-label">
+							<input class="file-input" type="file" id="{% config::html::upload_session %}" accept=".json">
+							<span class="file-cta">
+								<span class="file-icon">
+									<i class="fas fa-upload"></i>
+								</span>
+								<span class="file-label">upload session</span>
+							</span>
+						</label>
+					</div>
+				</div>
+			</div>
 
 			<div class="columns is-multiline is-centered">
 	
 				<div class="column is-one-two">
-
-						<div class="columns">
-							<div class="column">
-								<div class="select">
-									<select id="{% config::html::select_example %}" >
-										<option id="{% config::html::disable_option %}" selected disabled>Load an example</option>
-										<%c++ for (const auto & filename: @@.get<std::vector<std::string>>(config::html::chr_examples)){%>
-											<option value="{% filename %}">{% filename.substr(0, filename.find_last_of(".")) %}</option>
-										<%c++}%>
-									</select>
-								</div>
-							</div>
-							<div class="column">
-								<button class="button" type="button" id="{% config::html::compile %}" value="get">
-									<span class="icon is-small">
-										<i class="fas fa-cog"></i>
-									</span>
-									<span>compile</span>
-								</button>
-							</div>
-						</div>
-						<textarea class="textarea" id="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="20">{% @@.get<std::string>(config::html::chr_code) %}</textarea>
-				
-					<div class="field has-addons">
-						
-						<p class="control">
-							<button class="button" type="button" id="{% config::html::download_session %}" value="get">
-								<span class="icon is-small">
-									<i class="fas fa-download"></i>
-								</span>
-								<span>download session</span>
-							</button>
-						</p>
-						<p class="control">
-							<div class="file">
-								<label class="file-label">
-									<input class="file-input" type="file" id="{% config::html::upload_session %}" accept=".json" >
-									<span class="file-cta">
-										<span class="file-icon">
-											<i class="fas fa-upload"></i>
-										</span>
-										<span class="file-label">upload session</span>
-									</span>
-								</label>
-							</div>
-						</p>
-						
-					</div>
-
+						<textarea class="textarea" id="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="20">[[config::html::chr_code]]</textarea>
 				</div>
 
 				<div class="column is-one-two">
@@ -153,22 +151,10 @@
 							<thead>
 							  <tr>
 								<th>constraint</th>
+								<th></th>
 							  </tr>
 							</thead>
-							<tbody id="{% config::html::tbody_id %}">
-								<%c++ for (const auto & constraint: @@.get<std::vector<std::string>>(config::html::constraint_store)){%>
-									<tr>
-										<td>
-											<button class="button is-danger" type="button" name="{% config::html::remove_constraint %}" value="{% constraint %}">
-												<span class="icon is-small">
-													<i class="fas fa-times"></i>
-												</span>
-											</button>
-											{% constraint %}
-										</td>
-									</tr>
-								<%c++}%>
-							</tbody>
+							<tbody id="{% config::html::store_body %}"></tbody>
 						</table>
 						<div class="field">
 							<div class="control has-text-centered">
@@ -186,26 +172,13 @@
 						<table class="table is-fullwidth">
 							<thead>
 								<tr>
-									<th>variable</th>
+									<th>type</th>
+									<th>name</th>
 									<th>value</th>
 									<th></th>
 								</tr>
 							</thead>
-							<tbody id="{% config::html::tbody_id_variable %}">
-								<%c++ for (const auto & variable: @@.get<std::vector<std::pair<std::string, std::string>>>(config::html::variables)){%>
-									<tr>
-										<td>
-											<button class="button is-danger" type="button" name="{% config::html::remove_variable %}" value="{% variable.first %}">
-												<span class="icon is-small">
-													<i class="fas fa-times"></i>
-												</span>
-											</button>
-											{%  variable.first %}
-										</td>
-										<td>{% variable.second %}</td>
-									</tr>
-								<%c++}%>
-							</tbody>
+							<tbody id="{% config::html::variables_body %}"></tbody>
 						</table>
 						<div class="field">
 							<div class="control has-text-centered">

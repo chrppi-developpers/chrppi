@@ -10,16 +10,6 @@
 
 namespace fs = std::filesystem;
 
-std::string to_string(drogon::HttpMethod httpMethod)
-{
-	switch (httpMethod)
-	{
-		case drogon::Get:	return "GET";
-    	case drogon::Post:	return "POST";
-    	default:			return std::to_string(httpMethod);
-	}
-}
-
 void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::function<void(const drogon::HttpResponsePtr &)> && callback)
 {
 	drogon::MultiPartParser req_multi_part;
@@ -58,11 +48,11 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 				// Define space
 				try { interpreter.define_space(chr_filename); }
 				catch (const Interpreter::Exception & exception)
-				{ add_error(json_response, "Unable to load example (" + exception.what() + ")"); }
+				{ json_response[config::html::error].append("Unable to load example (" + exception.what() + ")"); }
 			}
 
 			else
-				add_error(json_response, "Unable to load example");
+				json_response[config::html::error].append("Unable to load example");
 		}
 
 		// Compile
@@ -86,11 +76,11 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 					// Define space
 					try { interpreter.define_space(chr_path); }
 					catch (const Interpreter::Exception & exception)
-					{ add_error(json_response, "Unable to compile CHR code (" + exception.what() + ")"); }
+					{ json_response[config::html::error].append("Unable to compile CHR code (" + exception.what() + ")"); }
 				}
 
 				else
-					add_error(json_response, "Unable to compile CHR code");
+					json_response[config::html::error].append("Unable to compile CHR code");
 
 				// Remove space file for current session
 				std::remove(chr_path.c_str());
@@ -104,9 +94,6 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 			Json::StreamWriterBuilder json_stream_writer;
 			resp = drogon::HttpResponse::newHttpResponse(drogon::HttpStatusCode::k200OK, drogon::ContentType::CT_APPLICATION_JSON);
 			resp->setBody(Json::writeString(json_stream_writer, interpreter.json_session()));
-
-			// Set the content disposition header to trigger a file download
-			resp->addHeader("Content-Disposition", "attachment; filename=session.json");
 		}
 
 		// Add a constraint
@@ -119,19 +106,17 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 					try { interpreter.add_constraint(req_parameter.find(config::html::add_constraint_value)->second); }
 					catch (const Interpreter::Exception & exception)
 					{ 
-						add_error(json_response, "Unable to add constraint (" + exception.what() + ")"); 
+						json_response[config::html::error].append("Unable to add constraint (" + exception.what() + ")"); 
 					}
 				}
 				else
 				{
-					add_error(json_response, "Constraint is empty ");
+					json_response[config::html::error].append("Constraint is empty ");
 				}
 				
 			}
 			else
-			{
-				add_error(json_response,"Unable to add constraint Ajax query not correctly form");
-			}
+				json_response[config::html::error].append("Unable to add constraint Ajax query not correctly form");
 		}
 
 		// Remove a constraint
@@ -139,7 +124,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		{
 			try { interpreter.remove_constraint(req_parameter.find(config::html::remove_constraint)->second); }
 			catch (const Interpreter::Exception & exception)
-			{ add_error(json_response, "Unable to remove constraint (" + exception.what() + ")"); }
+			{ json_response[config::html::error].append("Unable to remove constraint (" + exception.what() + ")"); }
 		}
 
 		// Clear constraint store
@@ -147,7 +132,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		{
 			try { interpreter.clear_store(); }
 			catch (const Interpreter::Exception & exception)
-			{ add_error(json_response, "Unable to clear constraint store (" + exception.what() + ")"); }
+			{ json_response[config::html::error].append("Unable to clear constraint store (" + exception.what() + ")"); }
 		}
 
 		// Add a variable
@@ -172,17 +157,17 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 						);
 					}
 					catch (const Interpreter::Exception & exception)
-					{ add_error(json_response, "Unable to add variable (" + exception.what() + ")"); }
+					{ json_response[config::html::error].append("Unable to add variable (" + exception.what() + ")"); }
 				}
 
 				// Variable parameter must have a value
 				else
-					add_error(json_response, "A variable must have a type and a name");
+					json_response[config::html::error].append("A variable must have a type and a name");
 			}
 
 			// Interpreter must have a session
 			else
-				add_error(json_response, "You must commpile a CHR space first");
+				json_response[config::html::error].append("You must commpile a CHR space first");
 		}
 
 		// Remove a variable
@@ -190,7 +175,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		{
 			try { interpreter.remove_variable(req_parameter.find(config::html::remove_variable)->second); }
 			catch (const Interpreter::Exception & exception)
-			{ add_error(json_response, "Unable to remove variable (" + exception.what() + ")"); }
+			{ json_response[config::html::error].append("Unable to remove variable (" + exception.what() + ")"); }
 		}
 
 		// Clear variables
@@ -198,7 +183,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		{
 			try { interpreter.clear_variables(); }
 			catch (const Interpreter::Exception & exception)
-			{ add_error(json_response, "Unable to clear variables (" + exception.what() + ")"); }
+			{ json_response[config::html::error].append("Unable to clear variables (" + exception.what() + ")"); }
 		}
 	}
 
@@ -208,7 +193,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		// Invalid file upload
 		drogon::MultiPartParser file_upload;
 		if (file_upload.parse(req) != 0 || file_upload.getFiles().size() == 0)
-			add_error(json_response, "Invalid file upload");
+			json_response[config::html::error].append("Invalid file upload");
 
 		else
 		{
@@ -221,11 +206,11 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 				// Start a new session based on given json
 				try { interpreter.new_session(json_session); }
 				catch (const Interpreter::Exception & exception)
-				{ add_error(data, "Cannot upload session (" + exception.what() + ")"); }
+				{ json_response[config::html::error].append("Cannot upload session (" + exception.what() + ")"); }
 			}
  
 			else
-				add_error(data, "Uploaded session could not be parsed");
+				json_response[config::html::error].append("Uploaded session could not be parsed");
 		}
 
 		// Update json session
@@ -251,35 +236,31 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 	// Insert constraint store if session is started
 	if (interpreter.has_session())
 		try 
-		{ 
-			data[config::html::constraint_store] = interpreter.constraint_store();
+		{
 			for (const std::string & constraint:interpreter.constraint_store())
 				json_response[config::html::constraint_store].append(constraint);
 		}
 		catch (const Interpreter::Exception & exception)
-		{ 
-			add_error(data, "Cannot get constraint store (" + exception.what() + ")");
-			add_error(json_response, "Cannot get constraint store (" + exception.what() + ")");
-		}
+		{ json_response[config::html::error].append("Cannot get constraint store (" + exception.what() + ")"); }
 
 	// Insert variables
 	try 
 	{
-		data[config::html::variables] = interpreter.variables_values();
+		data[config::html::variables] = interpreter.variables_value();
 		Json::Value aux;
-		for (const std::pair<std::string,std::string> & variable: interpreter.variables_values())
+		for (const Interpreter::Variable_value & variable_value: interpreter.variables_value())
 		{
 			aux.clear();
-			aux.append(variable.first);
-			aux.append(variable.second);
+			aux.append(variable_value.variable_definition.type);
+			aux.append(variable_value.variable_definition.name);
+			aux.append(variable_value.value);
 			
 			json_response[config::html::variables].append(aux);
 		}
 	}
 	catch (const Interpreter::Exception & exception)
-	{ 
-		add_error(data, "Cannot get variables (" + exception.what() + ")");
-		add_error(json_response, "Cannot get variables (" + exception.what() + ")"); 
+	{
+		json_response[config::html::error].append("Cannot get variables (" + exception.what() + ")"); 
 	}
 
 	// Send CHR code to HTML
@@ -306,16 +287,4 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 	}
 
 	callback(resp);
-}
-
-void Index::add_error(drogon::HttpViewData & data, const std::string & error)
-{
-	std::vector<std::string> errors = data.get<std::vector<std::string>>(config::html::error_id);
-	errors.push_back(error);
-	data[config::html::error_id] = errors;
-}
-
-void Index::add_error(Json::Value & json_response, const std::string & error)
-{
-	json_response[config::html::error_id].append(error);
 }

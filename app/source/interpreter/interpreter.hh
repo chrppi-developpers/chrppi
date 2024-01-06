@@ -7,6 +7,7 @@
 #include <json/value.h>
 
 // chrpp interpreter
+// Use chrppc and cling to make a working session
 class Interpreter
 {
 	public:
@@ -28,6 +29,20 @@ class Interpreter
 
 				std::string _what;
 		};
+
+		// Store a logical variable definition
+		struct Variable_definition
+		{
+			std::string type;
+			std::string name;
+		};
+
+		// Store a logical variable definition with its value
+		struct Variable_value
+		{
+			Variable_definition variable_definition;
+			std::string value;
+		};		
 
 		// Set session id
 		void session_id(const std::string & session_id);
@@ -59,8 +74,8 @@ class Interpreter
 		// Return true if there is an active session
 		bool has_session() const;
 
-		// Get logical variables name and values
-		std::vector<std::pair<std::string, std::string>> variables_values() const;
+		// Get logical variables value
+		std::vector<Variable_value> variables_value() const;
 
 		// Get Constraint store
 		std::vector<std::string> constraint_store() const;
@@ -88,8 +103,8 @@ class Interpreter
 		// Define a CHR space from given C++ code
 		void define_cpp_space(const std::string & space_name);
 
-		// Return stored variable name including removed count
-		std::string variable_name(const std::string name) const;
+		// Return stored variable full name including removed count
+		std::string full_variable_name(const std::string & name) const;
 
 		// Store session id given by an http request
 		std::string _session_id;
@@ -97,8 +112,8 @@ class Interpreter
 		// C++ interpreter used to compile CHR statement with chrppc
 		std::shared_ptr<cling::Interpreter> _cling_interpreter;
 
-		// Store logical variables name
-		std::vector<std::string> _variables;
+		// Store logical variables definition
+		std::vector<Variable_definition> _variables_definition;
 
 		// Count number of time a variable with same name was removed
 		// Allow to remove a variable and use it name to add a new one

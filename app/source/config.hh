@@ -37,7 +37,7 @@ namespace config
 	{
 		// Error
 		const std::string section_error_hidden("section error hidden");
-		const std::string error_id("error");
+		const std::string error("error");
 
 		// Load an example
 		const std::string select_example("select example");
@@ -68,13 +68,13 @@ namespace config
 
 		// Constraint store
 		const std::string constraint_store("constraint store");
-		const std::string tbody_id("tbody id");
+		const std::string store_body("store body");
 		const std::string remove_constraint("remove constraint");
 		const std::string clear_constraint_store("clear constraint store");
 
 		// Variables
 		const std::string variables("variables");
-		const std::string tbody_id_variable("tbody id variable");
+		const std::string variables_body("variables body");
 		const std::string remove_variable("remove variable");
 		const std::string clear_variables("clear variables");
 		

@@ -1,93 +1,76 @@
-// Path
-const upload_session_path = 'upload_session';
+// Idendifiers of HTML elements
+let id =
+{
+	// Path
+	upload_session_path: 'upload_session',
 
-// Error
-const section_error_hidden = 'section error hidden';
-const error_id = 'error';
+	// Error
+	section_error_hidden: 'section error hidden',
+	error: 'error',
 
-// Load an example
-const select_example = 'select example';
-const disable_option = 'disable option';
-const chr_examples = 'chr examples';
+	// Load an example
+	select_example: 'select example',
+	disable_option: 'disable option',
+	chr_examples: 'chr examples',
 
-// Compile chr code
-const compile = 'compile';
+	// Compile chr code
+	compile: 'compile',
 
-// CHR code
-const chr_code = 'chr code';
+	// CHR code
+	chr_code: 'chr code',
 
-// Download/upload session
-const download_session = 'download session';
-const upload_session = 'upload session';
+	// Download/upload session
+	download_session: 'download session',
+	upload_session: 'upload session',
 
-// Add Constraint 
-const add_constraint_value = 'add constraint value';
-const add_constraint = 'add constraint';
+	// Add Constraint 
+	add_constraint_value: 'add constraint value',
+	add_constraint: 'add constraint',
 
-// Add variable
-const add_variable = 'add variable';
-const variable_mutable = 'variable mutable';
-const variable_name = 'variable name';
-const field_variable = 'field variable';
-const variable_value = 'variable value';
-const variable_type = 'variable type';
+	// Add variable
+	add_variable: 'add variable',
+	variable_mutable: 'variable mutable',
+	variable_name: 'variable name',
+	field_variable: 'field variable',
+	variable_value: 'variable value',
+	variable_type: 'variable type',
 
-// Constraint Store
-const constraint_store = 'constraint store';
-const tbody_id = 'tbody id';
-const remove_constraint = 'remove constraint';
-const clear_constraint_store = 'clear constraint store';
+	// Constraint Store
+	constraint_store: 'constraint store',
+	store_body: 'store body',
+	remove_constraint: 'remove constraint',
+	clear_constraint_store: 'clear constraint store',
 
-// Variables
-const variables = 'variables'; 
-const tbody_id_variable = 'tbody id variable';
-const remove_variable = 'remove variable';
-const clear_variables = 'clear variables';
+	// Variables
+	variables: 'variables',
+	variables_body: 'variables body',
+	remove_variable: 'remove variable',
+	clear_variables: 'clear variables',
 
-// Ajax request
-const ajax_request = 'ajax request';
+	// Ajax request
+	ajax_request: 'ajax request'
+}
 
 // Onload
-document.getElementById(section_error_hidden).classList.remove('is-hidden');
-document.getElementById(section_error_hidden).classList.add('is-hidden');
-if (document.getElementById(variable_mutable).checked)
-	document.getElementById(field_variable).classList.remove('is-hidden');
+document.getElementById(id.section_error_hidden).classList.remove('is-hidden');
+document.getElementById(id.section_error_hidden).classList.add('is-hidden');
+if (document.getElementById(id.variable_mutable).checked)
+	document.getElementById(id.field_variable).classList.remove('is-hidden');
 else
 {
-	document.getElementById(field_variable).classList.remove('is-hidden');
-	document.getElementById(field_variable).classList.add('is-hidden');
+	document.getElementById(id.field_variable).classList.remove('is-hidden');
+	document.getElementById(id.field_variable).classList.add('is-hidden');
 }
 
-let tbody = document.getElementById(tbody_id);
-while (tbody.firstChild)
-	tbody.removeChild(tbody.firstChild);
+let store_body = document.getElementById(id.store_body);
+while (store_body.firstChild)
+	store_body.removeChild(store_body.firstChild);
 
-let tbodyVariable = document.getElementById(tbody_id_variable);
-while (tbodyVariable.firstChild) 
-	tbodyVariable.removeChild(tbodyVariable.firstChild);
+let variables_body = document.getElementById(id.variables_body);
+while (variables_body.firstChild) 
+	variables_body.removeChild(variables_body.firstChild);
 
-function downloadTextFile(text, fileName) 
-{
-	// Create a Blob containing the text
-	const blob = new Blob([text], { type: 'text/plain' });
-  
-	// Create a temporary link element
-	const link = document.createElement('a');
-	link.href = URL.createObjectURL(blob);
-	link.setAttribute('download', fileName);
-  
-	// Append the link to the body
-	document.body.appendChild(link);
-  
-	// Trigger a click event on the link
-	link.click();
-  
-	// Clean up: remove the link and the created object URL
-	document.body.removeChild(link);
-	URL.revokeObjectURL(link.href);
-}
-
-function send(data, method='Post', url='/', download_file=false, replace=false) 
+function send(data, url, download_file=false) 
 {
 	// Set cursor style to wait until getting response
 	document.body.style.cursor = 'wait';
@@ -99,159 +82,174 @@ function send(data, method='Post', url='/', download_file=false, replace=false)
 		// Reset cursor style to default
 		document.body.style.cursor = 'default';
 
-		if (XHR.status >= 200 && XHR.status < 300) 
+		if (XHR.status >= 200 && XHR.status < 300)
 		{
+			// Trigger download
 			if (download_file)
-				downloadTextFile(XHR.responseText, 'session.json');
-
-			if (replace)
 			{
-				document.open();
-				document.write(XHR.responseText);
-				document.close();
+				// Create a Blob containing the text
+				const file_download = new Blob([XHR.responseText], { type: 'text/plain' });
+			  
+				// Create a temporary link element
+				const download_link = document.createElement('a');
+				download_link.href = URL.createObjectURL(file_download);
+				download_link.setAttribute('download', 'session.json');
+			  
+				// Append the link to the body
+				document.body.appendChild(download_link);
+			  
+				// Trigger a click event on the link
+				download_link.click();
+			  
+				// Clean up: remove the link and the created object URL
+				document.body.removeChild(download_link);
+				URL.revokeObjectURL(download_link.href);
 			}
 
-			// Process Ajax
-			else
+			// Get server response
+			let response = JSON.parse(XHR.response);
+				
+			// Update CHR code
+			if (response[id.chr_code])
+				document.getElementById(id.chr_code).value = response[id.chr_code];
+
+			// Update error
+			if (response[id.error])
 			{
-				let Json = JSON.parse(XHR.response);
-				document.getElementById(section_error_hidden).classList.remove('is-hidden');
-				document.getElementById(section_error_hidden).classList.add('is-hidden');
-				if (Json[chr_code])
-					document.getElementById(chr_code).value = Json[chr_code];
-				if (Json[error_id])
+				let error = document.getElementById(id.error);
+				while (error.firstChild)
+					error.removeChild(error.firstChild);
+		
+				document.getElementById(id.section_error_hidden).classList.remove('is-hidden');
+				for (error_item_text of response[id.error])
 				{
-					let error = document.getElementById(error_id);
-					while (error.firstChild)
-						error.removeChild(error.firstChild);
-			
-					document.getElementById(section_error_hidden).classList.remove('is-hidden');
+					let error_item = document.createElement('li');
+					error_item.setAttribute('class', 'subtitle');
+					error_item.innerText = error_item_text;
+					error.appendChild(error_item);
+				}
+			}
+		
+			// Update examples
+			if (response[id.chr_examples])
+			{
+				let select_example = document.getElementById(id.select_example);
+				while (select_example.childNodes.length != 2)
+					select_example.removeChild(select_example.lastChild);
+				document.getElementById(id.disable_option).disabled = false;
+				select_example.selectedIndex = 0;
+				document.getElementById(id.disable_option).disabled = true;
+				for (chr_example of response[id.chr_examples])
+				{
+					let option = document.createElement('option');
+					option.setAttribute('value', chr_example);
+					option.innerText = chr_example.substr(0, chr_example.lastIndexOf('.'));
+					select_example.appendChild(option);
+				}
+			}
+
+			// Empty constraint store
+			let store_body = document.getElementById(id.store_body)
+			while (store_body.firstChild)
+				store_body.removeChild(store_body.firstChild);
+
+			// Update constraint store
+			if (response[id.constraint_store])
+			{
+				for (constraint_text of response[id.constraint_store])
+				{
+					// Create remove button
+					let remove_button = document.createElement('button');
+					remove_button.setAttribute('type', 'button');
+					remove_button.classList.add('button');
+					remove_button.classList.add('is-danger');
+					remove_button.setAttribute('name', id.remove_constraint);
+					remove_button.addEventListener
+					(
+						'click', 
+						(event) => 
+						{
+							data = ajax_data();
+							data[id.remove_constraint] = constraint_text;
+							send(data, '/');
+						}
+					)
+					let span = document.createElement('span');
+					span.classList.add('icon');
+					span.classList.add('is-small');
+					let i = document.createElement('i');
+					i.classList.add('fas');
+					i.classList.add('fa-times');
+					span.appendChild(i);
+					remove_button.appendChild(span);
 					
-					for (text of Json[error_id])
-					{
-						let li = document.createElement('li');
-						li.setAttribute('class', 'subtitle');
-						li.innerText = text;
-						error.appendChild(li);
-					}
+					// Create table data
+					let constraint_td = document.createElement('td');
+					constraint_td.appendChild(document.createTextNode(constraint_text));
+					let remove_td = document.createElement('td');
+					remove_td.appendChild(remove_button);
+
+					// Create and append table row
+					let constraint_tr = document.createElement('tr');
+					constraint_tr.appendChild(constraint_td);
+					constraint_tr.appendChild(remove_td);
+					store_body.appendChild(constraint_tr);
 				}
-			
-				if (Json[chr_examples])
+		
+			}
+
+			// Empty variables
+			let variables_body = document.getElementById(id.variables_body)
+			while (variables_body.firstChild) 
+				variables_body.removeChild(variables_body.firstChild);
+		
+			// Update variables
+			if (response[id.variables])
+			{
+				for (variable of response[id.variables])
 				{
-					let example = document.getElementById(select_example);
-					while (example.childNodes.length != 2)
-						example.removeChild(example.lastChild);
-					document.getElementById(disable_option).disabled = false;
-					example.selectedIndex = 0;
-					document.getElementById(disable_option).disabled = true;
-					for (text of Json[chr_examples])
-					{
-						let option=document.createElement('option');
-						option.setAttribute('value', text);
-						option.innerText = text.substr(0, text.lastIndexOf('.'));
-						example.appendChild(option);
-					}
-				}
-				let tbody = document.getElementById(tbody_id)
-				while (tbody.firstChild)
-					tbody.removeChild(tbody.firstChild);
-				if (Json[constraint_store])
-				{
-					for (text of Json[constraint_store])
-					{
-						let tr = document.createElement('tr');
-						let td = document.createElement('td');
-						let button = document.createElement('button');
-						let span = document.createElement('span');
-						let i = document.createElement('i');
-						let textNode = document.createTextNode(text);
-						
-						button.setAttribute('type', 'button');
-						button.classList.add('button');
-						button.classList.add('is-danger');
-						button.setAttribute('name', remove_constraint);
-						button.setAttribute('value', text);
-			
-						button.addEventListener
-						(
-							'click', 
-							(e) => 
-							{
-								data = ajax_data();
-								data[remove_constraint] = text;
-								send(data);
-							  }
-						)
-						
-						span.classList.add('icon');
-						span.classList.add('is-small');
-			
-						i.classList.add('fas');
-						i.classList.add('fa-times');
-			
-						span.appendChild(i);
-						button.appendChild(span);
-						
-						td.appendChild(textNode);
-						td.appendChild(button);
-						tr.appendChild(td);
-						tbody.appendChild(tr);
-					}
-			
-				}
-				let tbodyVariable = document.getElementById(tbody_id_variable)
-				while (tbodyVariable.firstChild) 
-					tbodyVariable.removeChild(tbodyVariable.firstChild);
-			
-				if (Json[ variables])
-				{
-					for (value of Json[variables])
-					{
-						let tr = document.createElement('tr');
-						let td = document.createElement('td');
-						let td2 = document.createElement('td');
-						let button = document.createElement('button');
-						let span = document.createElement('span');
-						let i = document.createElement('i');
-						let textNode = document.createTextNode(value[0]);
-						
-						button.setAttribute('type', 'button');
-						button.classList.add('button');
-						button.classList.add('is-danger');
-						button.setAttribute('name', remove_variable);
-						button.setAttribute('value', value[0]);
-			
-						button.addEventListener
-						(
-							'click', 
-							(e) => 
-							{
-								data = ajax_data();
-								data[remove_variable] = value[0];
-								send(data);
-							}
-						)
-			
-						span.classList.add('icon');
-						span.classList.add('is-small');
-			
-						i.classList.add('fas');
-						i.classList.add('fa-times');
-						
-						td2.textContent = value[1];
-			
-						span.appendChild(i);
-						button.appendChild(span);
-						td.appendChild(textNode);
-						tr.appendChild(td);
-						tr.appendChild(td2);
-						
-						let td3 = document.createElement('td');
-						td3.append(button);
-						tr.append(td3);
-			
-						tbodyVariable.appendChild(tr);
-					}
+					// Create remove button
+					let remove_button = document.createElement('button');
+					remove_button.setAttribute('type', 'button');
+					remove_button.classList.add('button');
+					remove_button.classList.add('is-danger');
+					remove_button.setAttribute('name', id.remove_variable);		
+					remove_button.addEventListener
+					(
+						'click', 
+						(event) => 
+						{
+							data = ajax_data();
+							data[id.remove_variable] = variable[1];
+							send(data, '/');
+						}
+					)
+					let span = document.createElement('span');
+					span.classList.add('icon');
+					span.classList.add('is-small');
+					let i = document.createElement('i');
+					i.classList.add('fas');
+					i.classList.add('fa-times');
+					span.appendChild(i);
+					remove_button.appendChild(span);
+					
+					// Create table data
+					let type_td = document.createElement('td');
+					type_td.textContent = variable[0];
+					let name_td = document.createElement('td');
+					name_td.textContent = variable[1];
+					let value_td = document.createElement('td');
+					value_td.textContent = variable[2];
+					let remove_td = document.createElement('td');
+					remove_td.appendChild(remove_button);
+
+					// Create and append table row
+					let variable_tr = document.createElement('tr');
+					variable_tr.appendChild(type_td);
+					variable_tr.appendChild(name_td);
+					variable_tr.appendChild(value_td);
+					variable_tr.appendChild(remove_td);
+					variables_body.appendChild(variable_tr);
 				}
 			}
 		}
@@ -260,7 +258,7 @@ function send(data, method='Post', url='/', download_file=false, replace=false)
 		else
 			console.error('The request failed with status:', XHR.status);
 	}
-	XHR.open(method, url, true);
+	XHR.open('POST', url, true);
 
 	// Create and send
 	const FD = new FormData();
@@ -273,7 +271,7 @@ function send(data, method='Post', url='/', download_file=false, replace=false)
 function ajax_data() 
 {
   let data = {};
-  data[ajax_request] = 'true';
+  data[id.ajax_request] = 'true';
   return data;
 }
   
@@ -284,121 +282,121 @@ function gather_data(data_id)
 }
 
 // Add contraint
-document.getElementById(add_constraint).addEventListener
+document.getElementById(id.add_constraint).addEventListener
 (
 	'click', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[add_constraint] = 'true';
-		data[add_constraint_value] = gather_data(add_constraint_value);
-		send(data);
+		data[id.add_constraint_value] = gather_data(id.add_constraint_value);
+		data[id.add_constraint] = 'true';
+		send(data, '/');
   	}
 )
 
 // Select example
-document.getElementById(select_example).addEventListener
+document.getElementById(id.select_example).addEventListener
 (
 	'change', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[select_example] = gather_data(select_example);
-		send(data);
+		data[id.select_example] = gather_data(id.select_example);
+		send(data, '/');
 	}
 )
 
 // Compile
-document.getElementById(compile).addEventListener
+document.getElementById(id.compile).addEventListener
 (
 	'click', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[compile] = true;
-		data[chr_code] = gather_data(chr_code);
-		send(data);
+		data[id.compile] = true;
+		data[id.chr_code] = gather_data(id.chr_code);
+		send(data, '/');
 	}
 )
 
 // Download session
-document.getElementById(download_session).addEventListener
+document.getElementById(id.download_session).addEventListener
 (
 	'click', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[download_session] = true;
-		send(data, 'Post', '/', true);
+		data[id.download_session] = true;
+		send(data, '/', true);
   	}
 )
 
 // Upload session
-document.getElementById(upload_session).addEventListener
+document.getElementById(id.upload_session).addEventListener
 (
 	'change', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[upload_session] = true;
-		data['file'] = e.target.files[0];
-		send(data, 'Post', upload_session_path);
+		data[id.upload_session] = true;
+		data['file'] = event.target.files[0];
+		send(data, id.upload_session_path);
 	}
 )
 
 // Add variable
-document.getElementById(add_variable).addEventListener
+document.getElementById(id.add_variable).addEventListener
 (
 	'click', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[add_variable] = true;
-		data[variable_mutable] = document.getElementById(variable_mutable).checked;
-		data[variable_name] = gather_data(variable_name);
-		data[variable_type] = gather_data(variable_type);
-		if (document.getElementById(variable_mutable).checked)
-			data[variable_value] = gather_data(variable_value);
-		send(data);
+		data[id.add_variable] = true;
+		data[id.variable_mutable] = document.getElementById(id.variable_mutable).checked;
+		data[id.variable_name] = gather_data(id.variable_name);
+		data[id.variable_type] = gather_data(id.variable_type);
+		if (document.getElementById(id.variable_mutable).checked)
+			data[id.variable_value] = gather_data(id.variable_value);
+		send(data, '/');
 	}
 )
 
 // Mutable variable
-document.getElementById(variable_mutable).addEventListener
+document.getElementById(id.variable_mutable).addEventListener
 (
 	'click', 
-	(e) => 
+	(event) => 
 	{
-		if (document.getElementById(variable_mutable).checked)
-			document.getElementById(field_variable).classList.remove('is-hidden');
+		if (document.getElementById(id.variable_mutable).checked)
+			document.getElementById(id.field_variable).classList.remove('is-hidden');
 		else
 		{
-			document.getElementById(field_variable).classList.remove('is-hidden');
-			document.getElementById(field_variable).classList.add('is-hidden');
+			document.getElementById(id.field_variable).classList.remove('is-hidden');
+			document.getElementById(id.field_variable).classList.add('is-hidden');
 		}
 	}
 )
 
 // Clear constraint store 
-document.getElementById(clear_constraint_store).addEventListener
+document.getElementById(id.clear_constraint_store).addEventListener
 (
 	'click', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[clear_constraint_store] = true;
-		send(data);
+		data[id.clear_constraint_store] = true;
+		send(data, '/');
   	}
 )
 
 // Clear Variables 
-document.getElementById(clear_variables).addEventListener
+document.getElementById(id.clear_variables).addEventListener
 (
 	'click', 
-	(e) => 
+	(event) => 
 	{
 		data = ajax_data();
-		data[clear_variables] = true;
-		send(data);
+		data[id.clear_variables] = true;
+		send(data, '/');
 	}
 )
