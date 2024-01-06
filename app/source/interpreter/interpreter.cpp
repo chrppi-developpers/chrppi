@@ -9,11 +9,14 @@
 #include "interpreter.hh"
 #include "../config.hh"
 
-int argc(const char * argv[])
+void Interpreter::session_id(const std::string & session_id)
 {
-	int argc(0);
-	while(argv[++argc]);
-	return argc;
+	_session_id = session_id;
+}
+
+std::string Interpreter::cpp_space_path() const
+{
+	return config::file::chr_spaces + "/" + _session_id + ".cpp";
 }
 
 void Interpreter::new_session()
@@ -29,7 +32,9 @@ void Interpreter::new_session()
 	_json_session["changes"] = Json::arrayValue;
 
 	// Create a new cling session
-	_cling_interpreter = std::make_shared<cling::Interpreter>(argc(_cling_argv), _cling_argv, config::file::llvm_build.c_str());
+	int cling_argc(0);
+	while(_cling_argv[++cling_argc]);
+	_cling_interpreter = std::make_shared<cling::Interpreter>(cling_argc, _cling_argv, config::file::llvm_build.c_str());
 
 	// Allow to print a space
 	if (failed(_cling_interpreter->declare("#include <iostream>")))
@@ -49,7 +54,7 @@ void Interpreter::new_session()
 void Interpreter::define_cpp_space(const std::string & space_name)
 {
 	// Load C++ space definition with cling
-	if (failed(_cling_interpreter->loadFile(cpp_path)))
+	if (failed(_cling_interpreter->loadFile(cpp_space_path())))
 		throw Exception("Failed to load CHR space");
 
 	// Create the space
@@ -68,11 +73,12 @@ void Interpreter::define_space(const std::string & chr_path)
 	new_session();
 
 	// Compile space definition to C++ with chrppc
-	if (std::system((config::file::chrpp_build + "/chrppc/chrppc --stdout " + chr_path + " > " + cpp_path).c_str()) != 0)
+	const std::string cpp_space_path(this->cpp_space_path());
+	if (std::system((config::file::chrpp_build + "/chrppc/chrppc --stdout " + chr_path + " > " + cpp_space_path).c_str()) != 0)
 		throw Exception("Failed to compile CHR space");
 
 	// Append print function to C++ file
-	std::ofstream append_cpp_file(cpp_path, std::ios::app);
+	std::ofstream append_cpp_file(cpp_space_path, std::ios::app);
 	append_cpp_file << R"EOF(
 template <typename T>
 std::vector<std::string> constraints(T & pb)
@@ -102,8 +108,11 @@ std::vector<std::string> constraints(T & pb)
 	std::ifstream read_chr_file(chr_path);
 	_json_session["chr_space"] = std::string {std::istreambuf_iterator<char>(read_chr_file), std::istreambuf_iterator<char>()};
 	_json_session["space_name"] = space_name;
-	std::ifstream read_cpp_file(cpp_path);
+	std::ifstream read_cpp_file(cpp_space_path);
 	_json_session["cpp_space"] = std::string {std::istreambuf_iterator<char>(read_cpp_file), std::istreambuf_iterator<char>()};
+
+	// Remove cpp space file
+	std::remove(cpp_space_path.c_str());
 }
 
 void Interpreter::add_variable(const std::string & type, const std::string & name, bool mutable_)
@@ -253,12 +262,16 @@ void Interpreter::new_session(const Json::Value json_session)
 	new_session();
 
 	// Save cpp space to a file
-	std::ofstream cpp_file(cpp_path);
-	cpp_file << json_session["cpp_space"].asString();
-	cpp_file.close();
+	const std::string cpp_space_path(this->cpp_space_path());
+	std::ofstream cpp_space_file(cpp_space_path);
+	cpp_space_file << json_session["cpp_space"].asString();
+	cpp_space_file.close();
 
 	// Define the given CHR space
 	define_cpp_space(json_session["space_name"].asString());
+
+	// Remove cpp space file
+	std::remove(cpp_space_path.c_str());
 
 	// Apply changes
 	for (const Json::Value & change: json_session["changes"])
@@ -293,8 +306,6 @@ const char * Interpreter::_cling_argv[]
 	"-std=c++17",
 	NULL
 };
-
-const std::string Interpreter::cpp_path(config::file::chr_spaces + "/space.cpp");
 
 bool Interpreter::failed(cling::Interpreter::CompilationResult compilationResult)
 {

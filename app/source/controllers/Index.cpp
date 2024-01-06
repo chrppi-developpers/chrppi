@@ -3,7 +3,8 @@
 #include <vector>
 #include <fstream>
 #include <regex>
-#include<exception>
+#include <exception>
+#include <cstdio>
 
 #include "Index.hh"
 
@@ -41,6 +42,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		std::optional<Json::Value> json_session(req->session()->getOptional<Json::Value>(config::session::json));
 		if (json_session)
 			interpreter.new_session(*json_session);
+		interpreter.session_id(req->session()->sessionId());
 	}
 
 	// Index
@@ -68,8 +70,10 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		{
 			if (req_parameter.find(config::html::chr_code) != req_parameter.end())
 			{
-				const std::string chr_path(config::file::chr_spaces + "/space.txt");
+				// Create space file for current session
+				const std::string chr_path(config::file::chr_spaces + "/" + req->session()->sessionId() + ".txt");
 				std::ofstream chr_file(chr_path, std::ios::binary);
+
 				if (chr_file.is_open())
 				{
 					// Get CHR code without cariage return characters added by textarea
@@ -87,6 +91,9 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 
 				else
 					add_error(json_response, "Unable to compile CHR code");
+
+				// Remove space file for current session
+				std::remove(chr_path.c_str());
 			}
 		}
 
@@ -198,9 +205,8 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 	// Upload a session
 	else if (req->getPath() == config::url::upload_session)
 	{
+		// Invalid file upload
 		drogon::MultiPartParser file_upload;
-		
-		// Invalid file uploadchr_code
 		if (file_upload.parse(req) != 0 || file_upload.getFiles().size() == 0)
 			add_error(json_response, "Invalid file upload");
 

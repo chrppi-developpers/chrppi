@@ -29,6 +29,12 @@ class Interpreter
 				std::string _what;
 		};
 
+		// Set session id
+		void session_id(const std::string & session_id);
+
+		// Return path of cpp space
+		std::string cpp_space_path() const;
+
 		// Define a CHR space
 		void define_space(const std::string & chr_path);
 		
@@ -73,8 +79,6 @@ class Interpreter
 		// Cling arguments
 		static const char * _cling_argv[];
 
-		static const std::string cpp_path;
-
 		// Return true if a cling compilation did not succeed
 		static bool failed(cling::Interpreter::CompilationResult compilationResult);
 
@@ -86,6 +90,9 @@ class Interpreter
 
 		// Return stored variable name including removed count
 		std::string variable_name(const std::string name) const;
+
+		// Store session id given by an http request
+		std::string _session_id;
 
 		// C++ interpreter used to compile CHR statement with chrppc
 		std::shared_ptr<cling::Interpreter> _cling_interpreter;
