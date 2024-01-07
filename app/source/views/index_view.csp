@@ -17,7 +17,7 @@
 	</head>
 
 	<body>
-		<section class="section is-hidden" id="{% config::html::error_section %}"> 
+		<section class="section p-4 is-hidden" id="{% config::html::error_section %}"> 
 			<div class="notification is-danger ">
 				
 				<p class="title">ERROR</p> 
@@ -34,7 +34,7 @@
 			</div>
 		</section>
 
-		<section class="section">
+		<section class="section p-4">
 
 			<div class="columns">
 				<div class="column is-narrow">
@@ -55,7 +55,7 @@
 						<span class="icon is-small">
 							<i class="fas fa-cog"></i>
 						</span>
-						<span>compile</span>
+						<span>Compile</span>
 					</button>
 				</div>
 				<div class="column is-narrow field has-addons">
@@ -65,7 +65,7 @@
 							<span class="icon is-small">
 								<i class="fas fa-download"></i>
 							</span>
-							<span>download session</span>
+							<span>Download session</span>
 						</button>
 					</p>
 
@@ -75,86 +75,87 @@
 							<span class="icon is-small">
 								<i class="fas fa-upload"></i>
 							</span>
-							<span>upload session</span>
+							<span>Upload session</span>
 						</button>
 					</p>
 
 				</div>
 			</div>
 
-			<div class="columns is-multiline is-centered">
+			<div class="columns">
 	
-				<div class="column is-one-two">
-						<textarea class="textarea" id="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="20">{% @@.get<std::string>(config::html::chr_code) %}</textarea>
+				<div class="column">
+						<textarea class="textarea" id="{% config::html::chr_code %}" placeholder="CHR code" spellcheck="false" autocorrect="off" wrap="off" rows="15">{% @@.get<std::string>(config::html::chr_code) %}</textarea>
 				</div>
 
-				<div class="column is-one-two">
+				<div class="column">
+
+					<div class="columns" style="height: 100%">
 					
-					<div class="my-3">
-						<fieldset class="box">
-							<legend class="label has-text-centered">Add a constraint</legend>
-							<div class="field">
-								<label class="label" for="{% config::html::add_constraint_value %}">Constraint</label>
+						<fieldset class="column box" style="height: 100%">
+							<legend class="label">Constraint</legend>
+							<label class="label" for="{% config::html::add_constraint_value %}">Value</label>
+							<div class="field has-addons">
 								<div class="control">
 									<input class="input" type="text" id="{% config::html::add_constraint_value %}">
 								</div>
-							</div>
-							<div class="field">
-								<div class="control has-text-centered">
-									<input class="button is-primary" type="button" id="{% config::html::add_constraint %}" value="add" />
+								<div class="control">
+									<button class="button is-primary" type="button" id="{% config::html::add_constraint %}">add</button>
 								</div>
 							</div>
 						</fieldset>
+					
+
+						<fieldset class="column box" style="height: 100%">
+							<legend class="label">Variable</legend>
+
+							<div class="columns is-multiline">
+								<div class="column is-half field">
+									<label class="label" for="{% config::html::variable_type %}">Type</label>
+									<div class="control">
+										<input class="input" type="text" id="{% config::html::variable_type %}">
+									</div>
+								</div>
+								<div class="column is-half field">
+									<label class="label" for="{% config::html::variable_name %}">Name</label>
+									<div class="control">
+										<input class="input" type="text" id="{% config::html::variable_name %}">
+									</div>
+								</div>
+								<div class="column is-half field" style="display: flex; align-items: center">
+									<label class="control label" for="{% config::html::variable_mutable %}">
+										<input class="checkbox" type="checkbox" id="{% config::html::variable_mutable %}">
+										Mutable
+									</label>
+								</div>
+								<div class="column is-half field">
+									<label class="label" for="{% config::html::variable_value %}">Value</label>
+									<div class="control">
+										<input class="input" type="text" id="{% config::html::variable_value %}">
+									</div>
+								</div>
+							</div>
+							
+							<div class="field">
+								<div class="control has-text-centered">
+									<button class="button is-primary" type="button" id="{% config::html::add_variable %}">add</button>
+								</div>
+							</div>
+							
+						</fieldset>
 					</div>
-					
-					<fieldset class="box">
-						<legend class="label has-text-centered">Add a variable</legend>
-						<div class="field">
-							<label class="label" for="{% config::html::variable_type %}">Type</label>
-							<div class="control">
-								<input class="input" type="text" id="{% config::html::variable_type %}">
-							</div>
-						</div>
-						<div class="field">
-							<label class="label" for="{% config::html::variable_name %}">Name</label>
-							<div class="control">
-								<input class="input" type="text" id="{% config::html::variable_name %}">
-							</div>
-						</div>
-						<div class="field">
-							<label class="label">
-								Mutable
-								<input type="checkbox" id="{% config::html::variable_mutable %}">
-							</label>
-						</div>
-						
-						<div class="field">
-							<label class="label" for="{% config::html::variable_value %}">Value</label>
-							<div class="control">
-								<input class="input" type="text" id="{% config::html::variable_value %}">
-							</div>
-						</div>
-
-						<div class="field">
-							<div class="control has-text-centered">
-								<input class="button is-primary" type="button" id="{% config::html::add_variable %}" value="add" />
-							</div>
-						</div>
-
-					</fieldset>
-					
 				</div>
 			</div>
 
-			<div class="columns is-multiline is-centered">
+			<div class="columns">
 				
-				<div class="column is-one-two">
+				<div class="column">
 					<fieldset class="box">
-						<legend class="label has-text-centered">Constraint store</legend>
+						<legend class="label">Constraint store</legend>
 						<table class="table is-fullwidth">
 							<thead>
 							  <tr>
-								<th>constraint</th>
+								<th>Constraint</th>
 								<th></th>
 							  </tr>
 							</thead>
@@ -175,23 +176,23 @@
 						</table>
 						<div class="field">
 							<div class="control has-text-centered">
-								<input class="button is-danger" type="button" id="{% config::html::clear_constraint_store %}" value="clear" />
+								<button class="button is-danger" type="button" id="{% config::html::clear_constraint_store %}">clear</button>
 							</div>
 						</div>
 					</fieldset>
 					
 				</div>
 
-				<div class="column is-one-two">
+				<div class="column">
 					
 					<fieldset class="box">
-						<legend class="label has-text-centered">Variables</legend>
+						<legend class="label">Variables</legend>
 						<table class="table is-fullwidth">
 							<thead>
 								<tr>
-									<th>type</th>
-									<th>name</th>
-									<th>value</th>
+									<th>Type</th>
+									<th>Name</th>
+									<th>Value</th>
 									<th></th>
 								</tr>
 							</thead>
@@ -214,7 +215,7 @@
 						</table>
 						<div class="field">
 							<div class="control has-text-centered">
-								<input class="button is-danger" type="button" id="{% config::html::clear_variables %}" value="clear" />
+								<button class="button is-danger" type="button" id="{% config::html::clear_variables %}">clear</button>
 							</div>
 						</div>
 					</fieldset>

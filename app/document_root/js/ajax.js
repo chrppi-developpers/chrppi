@@ -64,6 +64,14 @@ function send(data, url, download_file=false)
 		document.getElementById(id.select_example).parentNode.classList.add('is-loading');
 	else if (data[id.upload_session_input])
 		document.getElementById(id.upload_session_button).classList.add('is-loading');
+	else if (data[id.add_constraint])
+		document.getElementById(id.add_constraint).classList.add('is-loading');
+	else if (data[id.add_variable])
+		document.getElementById(id.add_variable).classList.add('is-loading');
+	else if (data[id.clear_constraint_store])
+		document.getElementById(id.clear_constraint_store).classList.add('is-loading');
+	else if (data[id.clear_variables])
+		document.getElementById(id.clear_variables).classList.add('is-loading');
 
 	// Create XHR request
 	const XHR = new XMLHttpRequest();	
@@ -77,6 +85,14 @@ function send(data, url, download_file=false)
 			document.getElementById(id.select_example).parentNode.classList.remove('is-loading');
 		else if (data[id.upload_session_input])
 			document.getElementById(id.upload_session_button).classList.remove('is-loading');
+		else if (data[id.add_constraint])
+			document.getElementById(id.add_constraint).classList.remove('is-loading');
+		else if (data[id.add_variable])
+			document.getElementById(id.add_variable).classList.remove('is-loading');
+		else if (data[id.clear_constraint_store])
+			document.getElementById(id.clear_constraint_store).classList.remove('is-loading');
+		else if (data[id.clear_variables])
+			document.getElementById(id.clear_variables).classList.remove('is-loading');
 
 		if (XHR.status >= 200 && XHR.status < 300)
 		{
@@ -165,11 +181,15 @@ function send(data, url, download_file=false)
 					remove_button.setAttribute('name', id.remove_constraint);
 					remove_button.addEventListener
 					(
-						'click', 
+						'click',
 						(event) => 
 						{
 							data = ajax_data();
 							data[id.remove_constraint] = constraint_text;
+
+							// Set loading animation
+							remove_button.classList.add('is-loading');
+
 							send(data, '/');
 						}
 					)
@@ -207,7 +227,7 @@ function send(data, url, download_file=false)
 					remove_button.setAttribute('type', 'button');
 					remove_button.classList.add('button');
 					remove_button.classList.add('is-danger');
-					remove_button.setAttribute('name', id.remove_variable);		
+					remove_button.setAttribute('name', id.remove_variable);
 					remove_button.addEventListener
 					(
 						'click', 
@@ -215,6 +235,10 @@ function send(data, url, download_file=false)
 						{
 							data = ajax_data();
 							data[id.remove_variable] = variable[1];
+
+							// Set loading animation
+							remove_button.classList.add('is-loading');
+
 							send(data, '/');
 						}
 					)
@@ -269,19 +293,6 @@ function ajax_data()
   return data;
 }
 
-// Add contraint
-document.getElementById(id.add_constraint).addEventListener
-(
-	'click', 
-	(event) => 
-	{
-		data = ajax_data();
-		data[id.add_constraint_value] = document.getElementById(id.add_constraint_value).value;
-		data[id.add_constraint] = true;
-		send(data, '/');
-  	}
-)
-
 // Select example
 document.getElementById(id.select_example).addEventListener
 (
@@ -333,6 +344,19 @@ document.getElementById(id.upload_session_input).addEventListener
 	}
 )
 
+// Add contraint
+document.getElementById(id.add_constraint).addEventListener
+(
+	'click', 
+	(event) => 
+	{
+		data = ajax_data();
+		data[id.add_constraint_value] = document.getElementById(id.add_constraint_value).value;
+		data[id.add_constraint] = true;
+		send(data, '/');
+  	}
+)
+
 // Add variable
 document.getElementById(id.add_variable).addEventListener
 (
@@ -350,7 +374,7 @@ document.getElementById(id.add_variable).addEventListener
 	}
 )
 
-// Mutable variable
+// Mutable variable enable variable value
 document.getElementById(id.variable_mutable).addEventListener
 (
 	'click', 
