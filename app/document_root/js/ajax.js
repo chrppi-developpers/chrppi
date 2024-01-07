@@ -5,50 +5,50 @@ let id =
 	upload_session_path: 'upload_session',
 
 	// Error
-	error_section: 'error section',
-	error_list: 'error list',
+	error_section: 'error_section',
+	error_list: 'error_list',
 
 	// Load an example
-	select_example: 'select example',
-	disable_option: 'disable option',
-	chr_examples: 'chr examples',
+	select_example: 'select_example',
+	disable_option: 'disable_option',
+	chr_examples: 'chr_examples',
 
 	// Compile chr code
 	compile: 'compile',
 
 	// CHR code
-	chr_code: 'chr code',
+	chr_code: 'chr_code',
 
 	// Download/upload session
-	download_session: 'download session',
-	upload_session_input: 'upload session input',
-	upload_session_button: 'upload session button',
+	download_session: 'download_session',
+	upload_session_input: 'upload_session_input',
+	upload_session_button: 'upload_session_button',
 
 	// Add Constraint
-	add_constraint_value: 'add constraint value',
-	add_constraint: 'add constraint',
+	add_constraint_value: 'add_constraint_value',
+	add_constraint: 'add_constraint',
 
 	// Add variable
-	add_variable: 'add variable',
-	variable_mutable: 'variable mutable',
-	variable_name: 'variable name',
-	variable_value: 'variable value',
-	variable_type: 'variable type',
+	add_variable: 'add_variable',
+	variable_mutable: 'variable_mutable',
+	variable_name: 'variable_name',
+	variable_value: 'variable_value',
+	variable_type: 'variable_type',
 
 	// Constraint Store
-	constraint_store: 'constraint store',
-	store_body: 'store body',
-	remove_constraint: 'remove constraint',
-	clear_constraint_store: 'clear constraint store',
+	constraint_store: 'constraint_store',
+	store_body: 'store_body',
+	remove_constraint: 'remove_constraint',
+	clear_constraint_store: 'clear_constraint_store',
 
 	// Variables
 	variables: 'variables',
-	variables_body: 'variables body',
-	remove_variable: 'remove variable',
-	clear_variables: 'clear variables',
+	variables_body: 'variables_body',
+	remove_variable: 'remove_variable',
+	clear_variables: 'clear_variables',
 
 	// Ajax request
-	ajax_request: 'ajax request'
+	ajax_request: 'ajax_request'
 }
 
 // Disable value field if variable is not mutable
@@ -179,20 +179,9 @@ function send(data, url, download_file=false)
 					remove_button.classList.add('button');
 					remove_button.classList.add('is-danger');
 					remove_button.setAttribute('name', id.remove_constraint);
-					remove_button.addEventListener
-					(
-						'click',
-						(event) => 
-						{
-							data = ajax_data();
-							data[id.remove_constraint] = constraint_text;
+					remove_button.setAttribute('value', constraint_text);
+					set_remove_constraint_click(remove_button);
 
-							// Set loading animation
-							remove_button.classList.add('is-loading');
-
-							send(data, '/');
-						}
-					)
 					let span = document.createElement('span');
 					span.classList.add('icon');
 					span.classList.add('is-small');
@@ -228,20 +217,9 @@ function send(data, url, download_file=false)
 					remove_button.classList.add('button');
 					remove_button.classList.add('is-danger');
 					remove_button.setAttribute('name', id.remove_variable);
-					remove_button.addEventListener
-					(
-						'click', 
-						(event) => 
-						{
-							data = ajax_data();
-							data[id.remove_variable] = variable[1];
-
-							// Set loading animation
-							remove_button.classList.add('is-loading');
-
-							send(data, '/');
-						}
-					)
+					remove_button.setAttribute('value', variable[1]);
+					set_remove_variable_click(remove_button);
+					
 					let span = document.createElement('span');
 					span.classList.add('icon');
 					span.classList.add('is-small');
@@ -384,6 +362,27 @@ document.getElementById(id.variable_mutable).addEventListener
 	}
 )
 
+// Remove constraint
+function set_remove_constraint_click(button)
+{
+	button.addEventListener
+	(
+		'click', 
+		(event) => 
+		{
+			data = ajax_data();
+			data[id.remove_constraint] = button.getAttribute('value');
+
+			// Set loading animation
+			button.classList.add('is-loading');
+
+			send(data, '/');
+	  	}
+	);
+}
+for (button of document.querySelectorAll('#' + id.store_body + ' button[name="' + id.remove_constraint + '"]'))
+	set_remove_constraint_click(button);
+
 // Clear constraint store 
 document.getElementById(id.clear_constraint_store).addEventListener
 (
@@ -395,6 +394,27 @@ document.getElementById(id.clear_constraint_store).addEventListener
 		send(data, '/');
   	}
 )
+
+// Remove variable
+function set_remove_variable_click(button)
+{
+	button.addEventListener
+	(
+		'click', 
+		(event) => 
+		{
+			data = ajax_data();
+			data[id.remove_variable] = button.getAttribute('value');
+
+			// Set loading animation
+			button.classList.add('is-loading');
+
+			send(data, '/');
+	  	}
+	);
+}
+for (button of document.querySelectorAll('#' + id.variables_body + ' button[name="' + id.remove_variable + '"]'))
+	set_remove_variable_click(button);
 
 // Clear Variables 
 document.getElementById(id.clear_variables).addEventListener
