@@ -127,7 +127,7 @@ void Interpreter::add_variable(const std::string & type, const std::string & nam
 
 	// Set initial value
 	if (value)
-		if (failed(_cling_interpreter->declare(full_variable_name(name) + " %= " + *value + ";")))
+		if (failed(_cling_interpreter->execute(full_variable_name(name) + " = " + *value + ";")))
 			throw Exception("Failed to assign initial value");
 
 	// Update variable declaration

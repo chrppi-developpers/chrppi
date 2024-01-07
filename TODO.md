@@ -1,4 +1,3 @@
-- Fix initial value for mutable variables not working
 - Fix and add tests
 	- load: test many asynchronous requests
 	- coverage: test all type of requests
