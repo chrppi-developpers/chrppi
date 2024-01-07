@@ -276,48 +276,63 @@ const Json::Value & Interpreter::json_session() const
 
 void Interpreter::new_session(const Json::Value json_session)
 {
-	// Start a new session
-	new_session();
-
-	// Save cpp space to a file
 	const std::string cpp_space_path(this->cpp_space_path());
-	std::ofstream cpp_space_file(cpp_space_path);
-	cpp_space_file << json_session["cpp_space"].asString();
-	cpp_space_file.close();
 
-	// Define the given CHR space
-	define_cpp_space(json_session["space_name"].asString());
+	// Try to start a new session
+	try
+	{
+		// Start a new session
+		new_session();
 
-	// Remove cpp space file
-	std::remove(cpp_space_path.c_str());
+		// Save cpp space to a file
+		std::ofstream cpp_space_file(cpp_space_path);
+		cpp_space_file << json_session["cpp_space"].asString();
+		cpp_space_file.close();
 
-	// Apply changes
-	for (const Json::Value & change: json_session["changes"])
-		if (change.isMember("add_constraint"))
-			add_constraint(change["add_constraint"].asString());
-		else if (change.isMember("remove_constraint"))
-			remove_constraint(change["remove_constraint"].asString());
-		else if (change.isMember("clear_store"))
-			clear_store();
-		else if (change.isMember("add_variable"))
-			add_variable
-			(
-				change["add_variable"]["type"].asString(), 
-				change["add_variable"]["name"].asString(), 
-				change["add_variable"]["mutable"].asBool(),
-					change["add_variable"].isMember("value")
-				?
-					std::optional<std::string> {change["add_variable"]["value"].asString()}
-				:
-					std::nullopt
-			);
-		else if (change.isMember("remove_variable"))
-			remove_variable(change["remove_variable"].asString());
-		else if (change.isMember("clear_variables"))
-			clear_variables();
-	
-	// Update json session
-	_json_session = json_session;
+		// Define the given CHR space
+		define_cpp_space(json_session["space_name"].asString());
+
+		// Remove cpp space file
+		std::remove(cpp_space_path.c_str());
+
+		// Apply changes
+		for (const Json::Value & change: json_session["changes"])
+			if (change.isMember("add_constraint"))
+				add_constraint(change["add_constraint"].asString());
+			else if (change.isMember("remove_constraint"))
+				remove_constraint(change["remove_constraint"].asString());
+			else if (change.isMember("clear_store"))
+				clear_store();
+			else if (change.isMember("add_variable"))
+				add_variable
+				(
+					change["add_variable"]["type"].asString(), 
+					change["add_variable"]["name"].asString(), 
+					change["add_variable"]["mutable"].asBool(),
+						change["add_variable"].isMember("value")
+					?
+						std::optional<std::string> {change["add_variable"]["value"].asString()}
+					:
+						std::nullopt
+				);
+			else if (change.isMember("remove_variable"))
+				remove_variable(change["remove_variable"].asString());
+			else if (change.isMember("clear_variables"))
+				clear_variables();
+
+		// Update json session
+		_json_session = json_session;
+	}
+
+	// Cannot create new session
+	catch (const Exception & exception)
+	{
+		// Make sure session is null and cpp space file is removed
+		_cling_interpreter = nullptr;
+		std::remove(cpp_space_path.c_str());
+
+		throw exception;
+	}
 }
 
 std::string Interpreter::space() const

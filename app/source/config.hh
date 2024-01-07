@@ -36,8 +36,8 @@ namespace config
 	namespace html
 	{
 		// Error
-		const std::string section_error_hidden("section error hidden");
-		const std::string error("error");
+		const std::string error_section("error section");
+		const std::string error_list("error list");
 
 		// Load an example
 		const std::string select_example("select example");

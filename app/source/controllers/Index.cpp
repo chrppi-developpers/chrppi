@@ -31,7 +31,9 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 	{
 		std::optional<Json::Value> json_session(req->session()->getOptional<Json::Value>(config::session::json));
 		if (json_session)
-			interpreter.new_session(*json_session);
+			try { interpreter.new_session(*json_session); }
+			catch (const Interpreter::Exception & exception)
+			{ req->session()->erase(config::session::json); }
 		interpreter.session_id(req->session()->sessionId());
 	}
 
@@ -109,7 +111,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 						catch (const Interpreter::Exception & exception)
 						{ append_error("Unable to add constraint (" + exception.what() + ")", data, json_response); }
 					}
-					
+
 					// Interpreter must have a session
 					else
 						append_error("You must commpile a CHR space first", data, json_response);
@@ -313,10 +315,10 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 void Index::append_error(const std::string & message, drogon::HttpViewData & data, Json::Value & json_response)
 {
 	// Append error to data
-	std::vector<std::string> errors = data.get<std::vector<std::string>>(config::html::error);
+	std::vector<std::string> errors = data.get<std::vector<std::string>>(config::html::error_list);
 	errors.push_back(message);
-	data[config::html::error] = errors;
+	data[config::html::error_list] = errors;
 
 	// Append error to json response
-	json_response[config::html::error].append(message);
+	json_response[config::html::error_list].append(message);
 }

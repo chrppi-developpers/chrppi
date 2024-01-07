@@ -17,13 +17,13 @@
 	</head>
 
 	<body>
-		<section class="section is-hidden" id="{% config::html::section_error_hidden %}"> 
+		<section class="section is-hidden" id="{% config::html::error_section %}"> 
 			<div class="notification is-danger ">
 				
 				<p class="title">ERROR</p> 
-				<ul id="{% config::html::error %}">
+				<ul id="{% config::html::error_list %}">
 				<%c++
-					const auto & errors(@@.get<std::vector<std::string>>(config::html::error));
+					const auto & errors(@@.get<std::vector<std::string>>(config::html::error_list));
 					if (!errors.empty())
 					{
 						for (const auto & error: errors)
@@ -67,7 +67,7 @@
 							<span>download session</span>
 						</button>
 					</p>
-					<div class="control file">
+					<div class="control file" id="test">
 						<label class="file-label">
 							<input class="file-input" type="file" id="{% config::html::upload_session %}" accept=".json">
 							<span class="file-cta">

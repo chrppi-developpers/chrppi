@@ -5,8 +5,8 @@ let id =
 	upload_session_path: 'upload_session',
 
 	// Error
-	section_error_hidden: 'section error hidden',
-	error: 'error',
+	error_section: 'error section',
+	error_list: 'error list',
 
 	// Load an example
 	select_example: 'select example',
@@ -100,24 +100,32 @@ function send(data, url, download_file=false)
 			// Get server response
 			let response = JSON.parse(XHR.response);
 				
+			// Empty previous data
+			document.getElementById(id.error_section).classList.add('is-hidden');
+			let error_list = document.getElementById(id.error_list);
+			while (error_list.firstChild)
+				error_list.removeChild(error_list.firstChild);
+			let store_body = document.getElementById(id.store_body)
+			while (store_body.firstChild)
+				store_body.removeChild(store_body.firstChild);
+			let variables_body = document.getElementById(id.variables_body)
+			while (variables_body.firstChild) 
+				variables_body.removeChild(variables_body.firstChild);
+
 			// Update CHR code
 			if (response[id.chr_code])
 				document.getElementById(id.chr_code).value = response[id.chr_code];
 
 			// Update error
-			if (response[id.error])
+			if (response[id.error_list])
 			{
-				let error = document.getElementById(id.error);
-				while (error.firstChild)
-					error.removeChild(error.firstChild);
-		
-				document.getElementById(id.section_error_hidden).classList.remove('is-hidden');
-				for (error_item_text of response[id.error])
+				document.getElementById(id.error_section).classList.remove('is-hidden');
+				for (error_item_text of response[id.error_list])
 				{
 					let error_item = document.createElement('li');
 					error_item.setAttribute('class', 'subtitle');
 					error_item.innerText = error_item_text;
-					error.appendChild(error_item);
+					error_list.appendChild(error_item);
 				}
 			}
 		
@@ -138,11 +146,6 @@ function send(data, url, download_file=false)
 					select_example.appendChild(option);
 				}
 			}
-
-			// Empty constraint store
-			let store_body = document.getElementById(id.store_body)
-			while (store_body.firstChild)
-				store_body.removeChild(store_body.firstChild);
 
 			// Update constraint store
 			if (response[id.constraint_store])
@@ -188,11 +191,6 @@ function send(data, url, download_file=false)
 				}
 		
 			}
-
-			// Empty variables
-			let variables_body = document.getElementById(id.variables_body)
-			while (variables_body.firstChild) 
-				variables_body.removeChild(variables_body.firstChild);
 		
 			// Update variables
 			if (response[id.variables])
@@ -262,7 +260,7 @@ function send(data, url, download_file=false)
 function ajax_data() 
 {
   let data = {};
-  data[id.ajax_request] = 'true';
+  data[id.ajax_request] = true;
   return data;
 }
 
@@ -274,7 +272,7 @@ document.getElementById(id.add_constraint).addEventListener
 	{
 		data = ajax_data();
 		data[id.add_constraint_value] = document.getElementById(id.add_constraint_value).value;
-		data[id.add_constraint] = 'true';
+		data[id.add_constraint] = true;
 		send(data, '/');
   	}
 )
