@@ -1,60 +1,9 @@
-// Idendifiers of HTML elements
-let id =
-{
-	// Path
-	upload_session_path: 'upload_session',
-
-	// Error
-	error_section: 'error_section',
-	error_list: 'error_list',
-
-	// Load an example
-	select_example: 'select_example',
-	disable_option: 'disable_option',
-	chr_examples: 'chr_examples',
-
-	// Compile chr code
-	compile: 'compile',
-
-	// CHR code
-	chr_code: 'chr_code',
-
-	// Download/upload session
-	download_session: 'download_session',
-	upload_session_input: 'upload_session_input',
-	upload_session_button: 'upload_session_button',
-
-	// Add Constraint
-	add_constraint_value: 'add_constraint_value',
-	add_constraint: 'add_constraint',
-
-	// Add variable
-	add_variable: 'add_variable',
-	variable_mutable: 'variable_mutable',
-	variable_name: 'variable_name',
-	variable_value: 'variable_value',
-	variable_type: 'variable_type',
-
-	// Constraint Store
-	constraint_store: 'constraint_store',
-	store_body: 'store_body',
-	remove_constraint: 'remove_constraint',
-	clear_constraint_store: 'clear_constraint_store',
-
-	// Variables
-	variables: 'variables',
-	variables_body: 'variables_body',
-	remove_variable: 'remove_variable',
-	clear_variables: 'clear_variables',
-
-	// Ajax request
-	ajax_request: 'ajax_request'
-}
+import {id} from './id.js';
 
 // Disable value field if variable is not mutable
 document.getElementById(id.variable_value).disabled = !document.getElementById(id.variable_mutable).checked;
 
-function send(data, url, download_file=false) 
+function send(data, url, download_file=false)
 {
 	// Set loading animations
 	document.body.style.cursor = 'wait';
@@ -77,25 +26,26 @@ function send(data, url, download_file=false)
 	const XHR = new XMLHttpRequest();	
 	XHR.onload = function()
 	{
-		// Unset loading animations
-		document.body.style.cursor = 'default';
-		if (data[id.compile])
-			document.getElementById(id.compile).classList.remove('is-loading');
-		else if (data[id.select_example])
-			document.getElementById(id.select_example).parentNode.classList.remove('is-loading');
-		else if (data[id.upload_session_input])
-			document.getElementById(id.upload_session_button).classList.remove('is-loading');
-		else if (data[id.add_constraint])
-			document.getElementById(id.add_constraint).classList.remove('is-loading');
-		else if (data[id.add_variable])
-			document.getElementById(id.add_variable).classList.remove('is-loading');
-		else if (data[id.clear_constraint_store])
-			document.getElementById(id.clear_constraint_store).classList.remove('is-loading');
-		else if (data[id.clear_variables])
-			document.getElementById(id.clear_variables).classList.remove('is-loading');
-
+		// Successful response
 		if (XHR.status >= 200 && XHR.status < 300)
 		{
+			// Unset loading animations
+			document.body.style.cursor = 'default';
+			if (data[id.compile])
+				document.getElementById(id.compile).classList.remove('is-loading');
+			else if (data[id.select_example])
+				document.getElementById(id.select_example).parentNode.classList.remove('is-loading');
+			else if (data[id.upload_session_input])
+				document.getElementById(id.upload_session_button).classList.remove('is-loading');
+			else if (data[id.add_constraint])
+				document.getElementById(id.add_constraint).classList.remove('is-loading');
+			else if (data[id.add_variable])
+				document.getElementById(id.add_variable).classList.remove('is-loading');
+			else if (data[id.clear_constraint_store])
+				document.getElementById(id.clear_constraint_store).classList.remove('is-loading');
+			else if (data[id.clear_variables])
+				document.getElementById(id.clear_variables).classList.remove('is-loading');
+
 			// Trigger download
 			if (download_file)
 			{
@@ -141,7 +91,7 @@ function send(data, url, download_file=false)
 			if (response[id.error_list])
 			{
 				document.getElementById(id.error_section).classList.remove('is-hidden');
-				for (error_item_text of response[id.error_list])
+				for (let error_item_text of response[id.error_list])
 				{
 					let error_item = document.createElement('li');
 					error_item.setAttribute('class', 'subtitle');
@@ -159,7 +109,7 @@ function send(data, url, download_file=false)
 				document.getElementById(id.disable_option).disabled = false;
 				select_example.selectedIndex = 0;
 				document.getElementById(id.disable_option).disabled = true;
-				for (chr_example of response[id.chr_examples])
+				for (let chr_example of response[id.chr_examples])
 				{
 					let option = document.createElement('option');
 					option.setAttribute('value', chr_example);
@@ -171,7 +121,7 @@ function send(data, url, download_file=false)
 			// Update constraint store
 			if (response[id.constraint_store])
 			{
-				for (constraint_text of response[id.constraint_store])
+				for (let constraint_text of response[id.constraint_store])
 				{
 					// Create remove button
 					let remove_button = document.createElement('button');
@@ -209,7 +159,7 @@ function send(data, url, download_file=false)
 			// Update variables
 			if (response[id.variables])
 			{
-				for (variable of response[id.variables])
+				for (let variable of response[id.variables])
 				{
 					// Create remove button
 					let remove_button = document.createElement('button');
@@ -254,7 +204,7 @@ function send(data, url, download_file=false)
 		else
 			console.error('The request failed with status:', XHR.status);
 	}
-	XHR.open('POST', url, true);
+	XHR.open('POST', url);
 
 	// Create and send
 	const FD = new FormData();
@@ -277,7 +227,7 @@ document.getElementById(id.select_example).addEventListener
 	'change', 
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.select_example] = document.getElementById(id.select_example).value;
 		send(data, '/');
 	}
@@ -289,7 +239,7 @@ document.getElementById(id.compile).addEventListener
 	'click',
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.compile] = true;
 		data[id.chr_code] = document.getElementById(id.chr_code).value;
 		console.log(data);
@@ -303,7 +253,7 @@ document.getElementById(id.download_session).addEventListener
 	'click', 
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.download_session] = true;
 		send(data, '/', true);
   	}
@@ -315,7 +265,7 @@ document.getElementById(id.upload_session_input).addEventListener
 	'change', 
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.upload_session_input] = true;
 		data['file'] = event.target.files[0];
 		send(data, id.upload_session_path);
@@ -328,7 +278,7 @@ document.getElementById(id.add_constraint).addEventListener
 	'click', 
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.add_constraint_value] = document.getElementById(id.add_constraint_value).value;
 		data[id.add_constraint] = true;
 		send(data, '/');
@@ -341,7 +291,7 @@ document.getElementById(id.add_variable).addEventListener
 	'click', 
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.add_variable] = true;
 		data[id.variable_mutable] = document.getElementById(id.variable_mutable).checked;
 		data[id.variable_name] = document.getElementById(id.variable_name).value;
@@ -370,7 +320,7 @@ function set_remove_constraint_click(button)
 		'click', 
 		(event) => 
 		{
-			data = ajax_data();
+			let data = ajax_data();
 			data[id.remove_constraint] = button.getAttribute('value');
 
 			// Set loading animation
@@ -380,7 +330,7 @@ function set_remove_constraint_click(button)
 	  	}
 	);
 }
-for (button of document.querySelectorAll('#' + id.store_body + ' button[name="' + id.remove_constraint + '"]'))
+for (let button of document.querySelectorAll('#' + id.store_body + ' button[name="' + id.remove_constraint + '"]'))
 	set_remove_constraint_click(button);
 
 // Clear constraint store 
@@ -389,7 +339,7 @@ document.getElementById(id.clear_constraint_store).addEventListener
 	'click', 
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.clear_constraint_store] = true;
 		send(data, '/');
   	}
@@ -403,7 +353,7 @@ function set_remove_variable_click(button)
 		'click', 
 		(event) => 
 		{
-			data = ajax_data();
+			let data = ajax_data();
 			data[id.remove_variable] = button.getAttribute('value');
 
 			// Set loading animation
@@ -413,7 +363,7 @@ function set_remove_variable_click(button)
 	  	}
 	);
 }
-for (button of document.querySelectorAll('#' + id.variables_body + ' button[name="' + id.remove_variable + '"]'))
+for (let button of document.querySelectorAll('#' + id.variables_body + ' button[name="' + id.remove_variable + '"]'))
 	set_remove_variable_click(button);
 
 // Clear Variables 
@@ -422,7 +372,7 @@ document.getElementById(id.clear_variables).addEventListener
 	'click', 
 	(event) => 
 	{
-		data = ajax_data();
+		let data = ajax_data();
 		data[id.clear_variables] = true;
 		send(data, '/');
 	}

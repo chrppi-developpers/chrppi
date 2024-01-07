@@ -13,7 +13,7 @@
 		<title>chrppi</title>
 		<link rel="stylesheet" href="css/bulma/css/bulma.min.css"/>
 		<script defer src="js/fontawesome.js"></script>
-		<script defer src="js/ajax.js"></script>
+		<script defer type="module" src="js/ajax.js"></script>
 	</head>
 
 	<body>
