@@ -21,9 +21,10 @@ let id =
 
 	// Download/upload session
 	download_session: 'download session',
-	upload_session: 'upload session',
+	upload_session_input: 'upload session input',
+	upload_session_button: 'upload session button',
 
-	// Add Constraint 
+	// Add Constraint
 	add_constraint_value: 'add constraint value',
 	add_constraint: 'add constraint',
 
@@ -61,6 +62,8 @@ function send(data, url, download_file=false)
 		document.getElementById(id.compile).classList.add('is-loading');
 	else if (data[id.select_example])
 		document.getElementById(id.select_example).parentNode.classList.add('is-loading');
+	else if (data[id.upload_session_input])
+		document.getElementById(id.upload_session_button).classList.add('is-loading');
 
 	// Create XHR request
 	const XHR = new XMLHttpRequest();	
@@ -72,6 +75,8 @@ function send(data, url, download_file=false)
 			document.getElementById(id.compile).classList.remove('is-loading');
 		else if (data[id.select_example])
 			document.getElementById(id.select_example).parentNode.classList.remove('is-loading');
+		else if (data[id.upload_session_input])
+			document.getElementById(id.upload_session_button).classList.remove('is-loading');
 
 		if (XHR.status >= 200 && XHR.status < 300)
 		{
@@ -316,13 +321,13 @@ document.getElementById(id.download_session).addEventListener
 )
 
 // Upload session
-document.getElementById(id.upload_session).addEventListener
+document.getElementById(id.upload_session_input).addEventListener
 (
 	'change', 
 	(event) => 
 	{
 		data = ajax_data();
-		data[id.upload_session] = true;
+		data[id.upload_session_input] = true;
 		data['file'] = event.target.files[0];
 		send(data, id.upload_session_path);
 	}

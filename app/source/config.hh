@@ -52,7 +52,8 @@ namespace config
 
 		// Download/upload session
 		const std::string download_session("download session");
-		const std::string upload_session("upload session");
+		const std::string upload_session_input("upload session input");
+		const std::string upload_session_button("upload session button");
 		
 		// Add a constraint
 		const std::string add_constraint_value("add constraint value");
