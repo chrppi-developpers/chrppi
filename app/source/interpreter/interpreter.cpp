@@ -181,7 +181,9 @@ void Interpreter::clear_variables()
 	_variables_declaration.clear();
 
 	// Update json session
-	_json_session["changes"].append("clear_variables");
+	Json::Value clear_variables;
+	clear_variables["clear_variables"] = true;
+	_json_session["changes"].append(clear_variables);
 }
 
 void Interpreter::add_constraint(const std::string & constraint)
@@ -239,7 +241,9 @@ void Interpreter::clear_store()
 
 	// Update json session
 	_json_session["changes"] = old_changes;
-	_json_session["changes"].append("clear_store");
+	Json::Value clear_store;
+	clear_store["clear_store"] = true;
+	_json_session["changes"].append(clear_store);
 }
 
 bool Interpreter::has_session() const
