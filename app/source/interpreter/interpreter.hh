@@ -48,9 +48,6 @@ class Interpreter
 		// Set session id
 		void session_id(const std::string & session_id);
 
-		// Return path of cpp space
-		std::string cpp_space_path() const;
-
 		// Define a CHR space
 		void define_space(const std::string & chr_path);
 		
@@ -102,7 +99,7 @@ class Interpreter
 		void new_session();
 
 		// Define a CHR space from given C++ code
-		void define_cpp_space(const std::string & space_name);
+		void define_cpp_space();
 
 		// Return stored variable full name including removed count
 		std::string full_variable_name(const std::string & name) const;

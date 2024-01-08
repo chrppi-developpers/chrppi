@@ -24,21 +24,25 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		<< "[thread " << std::distance(_interpreter_pool.begin(), _interpreter_pool.find(std::this_thread::get_id())) + 1 
 		<< "] session @" << req->session()->sessionId() << ": " << req->getMethodString() << " " << req->getPath(); 
 
-	// Get interpreter corresponding to current thread
+	// Get interpreter corresponding to current thread and set session id
 	Interpreter & interpreter(_interpreter_pool[std::this_thread::get_id()]);
+	interpreter.session_id(req->session()->sessionId());
 
 	// Get back user session
+	bool valid_session(true);
 	{
 		std::optional<Json::Value> json_session(req->session()->getOptional<Json::Value>(config::session::json));
 		if (json_session)
 			try { interpreter.new_session(*json_session); }
 			catch (const Interpreter::Exception & exception)
-			{ req->session()->erase(config::session::json); }
-		interpreter.session_id(req->session()->sessionId());
+			{
+				valid_session = false;
+				append_error("Invalid session (" + exception.what() + ")", data, json_response);
+			}
 	}
 
 	// Index
-	if (req->getPath() == config::url::root)
+	if (valid_session && req->getPath() == config::url::root)
 	{
 		// Load an example
 		if (req_parameter.find(config::html::select_example) != req_parameter.end())
@@ -50,7 +54,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 				// Define space
 				try { interpreter.define_space(chr_filename); }
 				catch (const Interpreter::Exception & exception)
-				{ append_error("Unable to load example (" + exception.what() + ")", data, json_response);}
+				{ append_error("Unable to load example (" + exception.what() + ")", data, json_response); }
 			}
 
 			else
