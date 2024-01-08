@@ -200,9 +200,9 @@ function send(data, url, download_file=false)
 			}
 		}
 
-		// Handle errors here, if the server returns a status code outside the 200-299 range
+		// Error
 		else
-			console.error('The request failed with status:', XHR.status);
+			console.error('XHR request failed with status: ', XHR.status);
 	}
 	XHR.open('POST', url);
 

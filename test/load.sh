@@ -60,15 +60,6 @@ fi
 
 function test
 {
-	if echo 'post all' | grep --word-regexp --quiet "$method"
-	then
-		curl \
-			--request POST \
-			--cookie JSESSIONID=$1 \
-			--url $url/upload_session \
-			--header 'Content-Type: multipart/form-data' \
-			--form 'upload session=@prime_session.json'
-	fi
 	if echo 'get all' | grep --word-regexp --quiet "$method"
 	then
 		curl -I \
@@ -76,6 +67,15 @@ function test
 			--cookie JSESSIONID=$1 \
 			--url $url \
 			2> /dev/null | head -1
+	fi
+	if echo 'post all' | grep --word-regexp --quiet "$method"
+	then
+		curl \
+			--request POST \
+			--cookie JSESSIONID=$1 \
+			--url $url/upload_session \
+			--header 'Content-Type: application/json' \
+			--data '{ "ajax request": true, "upload session": true, "file": "prime_session.json" }'
 	fi
 }
 

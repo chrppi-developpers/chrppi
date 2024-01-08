@@ -15,7 +15,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 	drogon::MultiPartParser req_multi_part;
     req_multi_part.parse(req);
     const std::map<std::string,std::string> & req_parameter(req_multi_part.getParameters());
-	
+
 	drogon::HttpViewData data;
 	drogon::HttpResponsePtr resp(nullptr);
 	Json::Value json_response;
@@ -39,7 +39,7 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 
 	// Index
 	if (req->getPath() == config::url::root)
-	{		
+	{
 		// Load an example
 		if (req_parameter.find(config::html::select_example) != req_parameter.end())
 		{
