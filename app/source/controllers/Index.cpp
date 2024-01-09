@@ -24,9 +24,9 @@ void Index::asyncHandleHttpRequest(const drogon::HttpRequestPtr & req, std::func
 		<< "[thread " << std::distance(_interpreter_pool.begin(), _interpreter_pool.find(std::this_thread::get_id())) + 1 
 		<< "] session @" << req->session()->sessionId() << ": " << req->getMethodString() << " " << req->getPath(); 
 
-	// Get interpreter corresponding to current thread and set session id
+	// Get interpreter corresponding to current thread and set client id
 	Interpreter & interpreter(_interpreter_pool[std::this_thread::get_id()]);
-	interpreter.session_id(req->session()->sessionId());
+	interpreter.client_id(req->session()->sessionId());
 
 	// Get back user session
 	bool valid_session(true);

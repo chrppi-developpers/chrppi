@@ -45,8 +45,8 @@ class Interpreter
 			std::string value;
 		};		
 
-		// Set session id
-		void session_id(const std::string & session_id);
+		// Set client id
+		void client_id(const std::string & client_id);
 
 		// Define a CHR space
 		void define_space(const std::string & chr_path);
@@ -104,8 +104,8 @@ class Interpreter
 		// Return stored variable full name including removed count
 		std::string full_variable_name(const std::string & name) const;
 
-		// Store session id given by an http request
-		std::string _session_id;
+		// Store client id given by an http request
+		std::string _client_id;
 
 		// C++ interpreter used to compile CHR statement with chrppc
 		std::shared_ptr<cling::Interpreter> _cling_interpreter;

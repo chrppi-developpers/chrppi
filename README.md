@@ -10,14 +10,16 @@ This repository is hosted on [Github](https://github.com/chrppi-developpers/chrp
 
 - Container engine (Podman)
 	- C++ package manager (Conan)
-		- Web framework (Drogon)
+		- C++ web framework (Drogon)
 			- CSS framework (Bulma)
 			- C++ interpreter (cling)
-				- CHR++ compiler (chrppc)
+			- CHR++ compiler (chrppc)
 
 ## Requirements
 
-- `Debian` based operating system 
+Any machine running macOS or GNU/Linux should be supported, but we recommend using a `Debian` based operating system as we did.
+
+The absolute path of the root folder should not contain spaces in order to allow compilation (excecution of `app/build.sh` and `app/run.sh`).
 
 ## LERIA deployment
 

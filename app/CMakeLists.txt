@@ -33,6 +33,7 @@ endif()
 include(${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake)
 
 # Build CSP views (https://drogonframework.github.io/drogon-docs/#/ENG-06-View?id=automated-processing-of-csp-files)
+# Warning: This code require that the absolute path of the parent folder does not contain whitespaces
 file(GLOB SCP_LIST ${CMAKE_CURRENT_SOURCE_DIR}/source/views/*.csp)
 foreach(csp_file ${SCP_LIST})
 	message(STATUS "csp_file:" ${csp_file})

@@ -9,9 +9,9 @@
 #include "interpreter.hh"
 #include "../config.hh"
 
-void Interpreter::session_id(const std::string & session_id)
+void Interpreter::client_id(const std::string & client_id)
 {
-	_session_id = session_id;
+	_client_id = client_id;
 }
 
 void Interpreter::new_session()
@@ -68,7 +68,7 @@ void Interpreter::define_space(const std::string & chr_path)
 	new_session();
 
 	// Compile space definition to C++ with chrppc
-	const std::string cpp_space_path(config::file::chr_spaces + "/" + _session_id + ".cpp");
+	const std::string cpp_space_path(config::file::chr_spaces + "/" + _client_id + ".cpp");
 	if (std::system((config::file::chrpp_build + "/chrppc/chrppc --stdout " + chr_path + " > " + cpp_space_path).c_str()) != 0)
 	{
 		// Remove cpp space file
