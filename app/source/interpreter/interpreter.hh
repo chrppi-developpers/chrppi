@@ -101,9 +101,6 @@ class Interpreter
 		// Define a CHR space from given C++ code
 		void define_cpp_space();
 
-		// Return stored variable full name including removed count
-		std::string full_variable_name(const std::string & name) const;
-
 		// Store client id given by an http request
 		std::string _client_id;
 
@@ -112,11 +109,6 @@ class Interpreter
 
 		// Store logical variables declarations
 		std::vector<Variable_declaration> _variables_declaration;
-
-		// Count number of time a variable with same name was removed
-		// Allow to remove a variable and use it name to add a new one
-		// Cannot use unload method because it fails at unloading a logical variable declaration (see https://github.com/root-project/cling/issues/318)
-		std::map<std::string, std::size_t> _removed_variables;
 
 		// Store session in Json format
 		Json::Value _json_session;

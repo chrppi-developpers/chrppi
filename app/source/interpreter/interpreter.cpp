@@ -19,9 +19,6 @@ void Interpreter::new_session()
 	// Empty stored variables declaration
 	_variables_declaration.clear();
 
-	// Empty removed variables
-	_removed_variables.clear();
-
 	// Empty and initialize json session
 	_json_session.clear();
 	_json_session["changes"] = Json::arrayValue;
@@ -55,11 +52,6 @@ void Interpreter::define_cpp_space()
 	// Create the space
 	if (failed(_cling_interpreter->declare("auto space(" + _json_session["space_name"].asString() + "::create());")))
 		throw Exception("Failed to create CHR space");
-}
-
-std::string Interpreter::full_variable_name(const std::string & name) const
-{
-	return name + "_" + std::to_string(_removed_variables.find(name)->second);
 }
 
 void Interpreter::define_space(const std::string & chr_path)
@@ -115,17 +107,13 @@ std::vector<std::string> constraints(T & pb)
 
 void Interpreter::add_variable(const std::string & type, const std::string & name, bool mutable_, const std::optional<std::string> & value)
 {
-	// Update removed variable
-	if (_removed_variables.find(name) == _removed_variables.end())
-		_removed_variables[name] = 0;
-
 	// Declare the new variable
-	if (failed(_cling_interpreter->declare("chr::Logical_var" + std::string {mutable_ ? "_mutable" : ""} + "<" + type + "> " + full_variable_name(name) + ";")))
+	if (failed(_cling_interpreter->declare("chr::Logical_var" + std::string {mutable_ ? "_mutable" : ""} + "<" + type + "> " + name + ";")))
 		throw Exception("Failed to declare variable");
 
 	// Set initial value
 	if (value)
-		if (failed(_cling_interpreter->execute(full_variable_name(name) + " = " + *value + ";")))
+		if (failed(_cling_interpreter->execute(name + " = " + *value + ";")))
 			throw Exception("Failed to assign initial value");
 
 	// Update variable declaration
@@ -159,9 +147,17 @@ void Interpreter::remove_variable(const std::string & name)
 	if (variable_declaration == _variables_declaration.end())
 		throw Exception("Unknow variable");
 	_variables_declaration.erase(variable_declaration);
-	
-	// Update removed variable
-	++_removed_variables[name];
+
+	// Forced to start new session without the variable declaration
+	// Because AllowRedefinition and unload doesn't work for space files (see https://github.com/root-project/cling/issues/318)
+	const Json::Value old_changes(_json_session["changes"]);
+	Json::Value new_changes(Json::arrayValue);
+	for (auto change(_json_session["changes"].begin()); change != _json_session["changes"].end(); ++change)
+		if (!(change->isMember("add_variable") && (*change)["add_variable"]["name"].asString() == name))
+			new_changes.append(*change);
+	_json_session["changes"] = new_changes;
+	new_session(_json_session);
+	_json_session["changes"] = old_changes;
 
 	// Update json session
 	Json::Value remove_variable;
@@ -171,10 +167,6 @@ void Interpreter::remove_variable(const std::string & name)
 
 void Interpreter::clear_variables()
 {
-	// Update removed variable
-	for (const Variable_declaration & variable_declaration: _variables_declaration)
-		++_removed_variables[variable_declaration.name];
-
 	// Clear variables declaration
 	_variables_declaration.clear();
 
@@ -225,20 +217,18 @@ for (auto it = space->get_)EOF" + constraint_name + R"EOF(_store().begin(); it !
 
 void Interpreter::clear_store()
 {
-	// Save current changes
-	const Json::Value old_changes(_json_session["changes"]);
-
 	// Forced to start new session without constraint changes
 	// Because AllowRedefinition and unload doesn't work for space files (see https://github.com/root-project/cling/issues/318)
+	const Json::Value old_changes(_json_session["changes"]);
 	Json::Value new_changes(Json::arrayValue);
 	for (auto change(_json_session["changes"].begin()); change != _json_session["changes"].end(); ++change)
-		if (!(*change).isMember("add_constraint") && !(*change).isMember("remove_constraint"))
+		if (!change->isMember("add_constraint") && !change->isMember("remove_constraint"))
 			new_changes.append(*change);
 	_json_session["changes"] = new_changes;
 	new_session(_json_session);
+	_json_session["changes"] = old_changes;
 
 	// Update json session
-	_json_session["changes"] = old_changes;
 	Json::Value clear_store;
 	clear_store["clear_store"] = true;
 	_json_session["changes"].append(clear_store);
@@ -255,7 +245,7 @@ std::vector<Interpreter::Variable_definition> Interpreter::variables_definition(
 	cling::Value value;
 	for (const Variable_declaration & variable_declaration: _variables_declaration)
 	{
-		if (failed(_cling_interpreter->process(full_variable_name(variable_declaration.name) + ".to_string();", &value)))
+		if (failed(_cling_interpreter->process(variable_declaration.name + ".to_string();", &value)))
 			throw Exception("Failed to get variable value");
 		variables_definition.emplace_back(variable_declaration, *(std::string*)value.getPtr());
 	}
