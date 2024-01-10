@@ -62,21 +62,26 @@ function test
 {
 	if echo 'get all' | grep --word-regexp --quiet "$method"
 	then
+		echo "@$1: GET $url"
 		curl -I \
 			--request GET \
 			--cookie JSESSIONID=$1 \
 			--url $url \
 			2> /dev/null | head -1
 	fi
+
 	if echo 'post all' | grep --word-regexp --quiet "$method"
 	then
+		echo "@$1: POST $url"
 		curl \
 			--request POST \
 			--cookie JSESSIONID=$1 \
 			--url $url/upload_session \
-			--header 'Content-Type: application/json' \
-			--data '{ "ajax request": true, "upload session": true, "file": "prime_session.json" }'
-	fi
+			--header 'Content-Type: multipart/form-data' \
+			--form 'ajax_request=true' \
+			--form 'file=@prime_session.json'
+			> /dev/null
+	fi	
 }
 
 # Send many concurent HTTP requests and store pids
