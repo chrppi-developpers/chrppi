@@ -11,8 +11,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>chrppi</title>
-		<link rel="stylesheet" href="css/bulma/css/bulma.min.css"/>
-		<script defer src="js/fontawesome.js"></script>
+		<link rel="stylesheet" href="css/third-party/bulma/css/bulma.min.css"/>
+		<script defer src="js/third-party/fontawesome.js"></script>
 		<script defer type="module" src="js/ajax.js"></script>
 	</head>
 

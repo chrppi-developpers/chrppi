@@ -1,4 +1,4 @@
-import {id} from './id.js';
+import {id, ajax_data} from './utils.js';
 
 // Disable value field if variable is not mutable
 document.getElementById(id.variable_value).disabled = !document.getElementById(id.variable_mutable).checked;
@@ -46,7 +46,7 @@ function send(data, url, download_file=false)
 			else if (data[id.clear_variables])
 				document.getElementById(id.clear_variables).classList.remove('is-loading');
 
-			// Trigger download
+			// Recieve a file
 			if (download_file)
 			{
 				// Create a Blob containing the text
@@ -68,134 +68,138 @@ function send(data, url, download_file=false)
 				URL.revokeObjectURL(download_link.href);
 			}
 
-			// Get server response
-			let response = JSON.parse(XHR.response);
+			// Recieve JSON
+			else
+			{
+				// Get server response
+				let response = JSON.parse(XHR.response);
+
+				// Empty previous data
+				document.getElementById(id.error_section).classList.add('is-hidden');
+				let error_list = document.getElementById(id.error_list);
+				while (error_list.firstChild)
+					error_list.removeChild(error_list.firstChild);
+				let store_body = document.getElementById(id.store_body)
+				while (store_body.firstChild)
+					store_body.removeChild(store_body.firstChild);
+				let variables_body = document.getElementById(id.variables_body)
+				while (variables_body.firstChild) 
+					variables_body.removeChild(variables_body.firstChild);
+
+				// Update CHR code
+				if (response[id.chr_code])
+					document.getElementById(id.chr_code).value = response[id.chr_code];
+
+				// Update error
+				if (response[id.error_list])
+				{
+					document.getElementById(id.error_section).classList.remove('is-hidden');
+					for (let error_item_text of response[id.error_list])
+					{
+						let error_item = document.createElement('li');
+						error_item.setAttribute('class', 'subtitle');
+						error_item.innerText = error_item_text;
+						error_list.appendChild(error_item);
+					}
+				}
+			
+				// Update examples
+				if (response[id.chr_examples])
+				{
+					let select_example = document.getElementById(id.select_example);
+					while (select_example.childNodes.length != 2)
+						select_example.removeChild(select_example.lastChild);
+					document.getElementById(id.disable_option).disabled = false;
+					select_example.selectedIndex = 0;
+					document.getElementById(id.disable_option).disabled = true;
+					for (let chr_example of response[id.chr_examples])
+					{
+						let option = document.createElement('option');
+						option.setAttribute('value', chr_example);
+						option.innerText = chr_example.substr(0, chr_example.lastIndexOf('.'));
+						select_example.appendChild(option);
+					}
+				}
+
+				// Update constraint store
+				if (response[id.constraint_store])
+				{
+					for (let constraint_text of response[id.constraint_store])
+					{
+						// Create remove button
+						let remove_button = document.createElement('button');
+						remove_button.setAttribute('type', 'button');
+						remove_button.classList.add('button');
+						remove_button.classList.add('is-danger');
+						remove_button.setAttribute('name', id.remove_constraint);
+						remove_button.setAttribute('value', constraint_text);
+						set_remove_constraint_click(remove_button);
+
+						let span = document.createElement('span');
+						span.classList.add('icon');
+						span.classList.add('is-small');
+						let i = document.createElement('i');
+						i.classList.add('fas');
+						i.classList.add('fa-times');
+						span.appendChild(i);
+						remove_button.appendChild(span);
+
+						// Create table data
+						let constraint_td = document.createElement('td');
+						constraint_td.appendChild(document.createTextNode(constraint_text));
+						let remove_td = document.createElement('td');
+						remove_td.appendChild(remove_button);
+
+						// Create and append table row
+						let constraint_tr = document.createElement('tr');
+						constraint_tr.appendChild(constraint_td);
+						constraint_tr.appendChild(remove_td);
+						store_body.appendChild(constraint_tr);
+					}
 				
-			// Empty previous data
-			document.getElementById(id.error_section).classList.add('is-hidden');
-			let error_list = document.getElementById(id.error_list);
-			while (error_list.firstChild)
-				error_list.removeChild(error_list.firstChild);
-			let store_body = document.getElementById(id.store_body)
-			while (store_body.firstChild)
-				store_body.removeChild(store_body.firstChild);
-			let variables_body = document.getElementById(id.variables_body)
-			while (variables_body.firstChild) 
-				variables_body.removeChild(variables_body.firstChild);
-
-			// Update CHR code
-			if (response[id.chr_code])
-				document.getElementById(id.chr_code).value = response[id.chr_code];
-
-			// Update error
-			if (response[id.error_list])
-			{
-				document.getElementById(id.error_section).classList.remove('is-hidden');
-				for (let error_item_text of response[id.error_list])
-				{
-					let error_item = document.createElement('li');
-					error_item.setAttribute('class', 'subtitle');
-					error_item.innerText = error_item_text;
-					error_list.appendChild(error_item);
 				}
-			}
-		
-			// Update examples
-			if (response[id.chr_examples])
-			{
-				let select_example = document.getElementById(id.select_example);
-				while (select_example.childNodes.length != 2)
-					select_example.removeChild(select_example.lastChild);
-				document.getElementById(id.disable_option).disabled = false;
-				select_example.selectedIndex = 0;
-				document.getElementById(id.disable_option).disabled = true;
-				for (let chr_example of response[id.chr_examples])
+			
+				// Update variables
+				if (response[id.variables])
 				{
-					let option = document.createElement('option');
-					option.setAttribute('value', chr_example);
-					option.innerText = chr_example.substr(0, chr_example.lastIndexOf('.'));
-					select_example.appendChild(option);
-				}
-			}
+					for (let variable of response[id.variables])
+					{
+						// Create remove button
+						let remove_button = document.createElement('button');
+						remove_button.setAttribute('type', 'button');
+						remove_button.classList.add('button');
+						remove_button.classList.add('is-danger');
+						remove_button.setAttribute('name', id.remove_variable);
+						remove_button.setAttribute('value', variable[1]);
+						set_remove_variable_click(remove_button);
 
-			// Update constraint store
-			if (response[id.constraint_store])
-			{
-				for (let constraint_text of response[id.constraint_store])
-				{
-					// Create remove button
-					let remove_button = document.createElement('button');
-					remove_button.setAttribute('type', 'button');
-					remove_button.classList.add('button');
-					remove_button.classList.add('is-danger');
-					remove_button.setAttribute('name', id.remove_constraint);
-					remove_button.setAttribute('value', constraint_text);
-					set_remove_constraint_click(remove_button);
+						let span = document.createElement('span');
+						span.classList.add('icon');
+						span.classList.add('is-small');
+						let i = document.createElement('i');
+						i.classList.add('fas');
+						i.classList.add('fa-times');
+						span.appendChild(i);
+						remove_button.appendChild(span);
 
-					let span = document.createElement('span');
-					span.classList.add('icon');
-					span.classList.add('is-small');
-					let i = document.createElement('i');
-					i.classList.add('fas');
-					i.classList.add('fa-times');
-					span.appendChild(i);
-					remove_button.appendChild(span);
-					
-					// Create table data
-					let constraint_td = document.createElement('td');
-					constraint_td.appendChild(document.createTextNode(constraint_text));
-					let remove_td = document.createElement('td');
-					remove_td.appendChild(remove_button);
+						// Create table data
+						let type_td = document.createElement('td');
+						type_td.textContent = variable[0];
+						let name_td = document.createElement('td');
+						name_td.textContent = variable[1];
+						let value_td = document.createElement('td');
+						value_td.textContent = variable[2];
+						let remove_td = document.createElement('td');
+						remove_td.appendChild(remove_button);
 
-					// Create and append table row
-					let constraint_tr = document.createElement('tr');
-					constraint_tr.appendChild(constraint_td);
-					constraint_tr.appendChild(remove_td);
-					store_body.appendChild(constraint_tr);
-				}
-		
-			}
-		
-			// Update variables
-			if (response[id.variables])
-			{
-				for (let variable of response[id.variables])
-				{
-					// Create remove button
-					let remove_button = document.createElement('button');
-					remove_button.setAttribute('type', 'button');
-					remove_button.classList.add('button');
-					remove_button.classList.add('is-danger');
-					remove_button.setAttribute('name', id.remove_variable);
-					remove_button.setAttribute('value', variable[1]);
-					set_remove_variable_click(remove_button);
-					
-					let span = document.createElement('span');
-					span.classList.add('icon');
-					span.classList.add('is-small');
-					let i = document.createElement('i');
-					i.classList.add('fas');
-					i.classList.add('fa-times');
-					span.appendChild(i);
-					remove_button.appendChild(span);
-					
-					// Create table data
-					let type_td = document.createElement('td');
-					type_td.textContent = variable[0];
-					let name_td = document.createElement('td');
-					name_td.textContent = variable[1];
-					let value_td = document.createElement('td');
-					value_td.textContent = variable[2];
-					let remove_td = document.createElement('td');
-					remove_td.appendChild(remove_button);
-
-					// Create and append table row
-					let variable_tr = document.createElement('tr');
-					variable_tr.appendChild(type_td);
-					variable_tr.appendChild(name_td);
-					variable_tr.appendChild(value_td);
-					variable_tr.appendChild(remove_td);
-					variables_body.appendChild(variable_tr);
+						// Create and append table row
+						let variable_tr = document.createElement('tr');
+						variable_tr.appendChild(type_td);
+						variable_tr.appendChild(name_td);
+						variable_tr.appendChild(value_td);
+						variable_tr.appendChild(remove_td);
+						variables_body.appendChild(variable_tr);
+					}
 				}
 			}
 		}
@@ -211,14 +215,6 @@ function send(data, url, download_file=false)
 	for (const [name, value] of Object.entries(data))
 		FD.append(name, value);
 	XHR.send(FD);
-}
-
-// Return Ajax data
-function ajax_data() 
-{
-  let data = {};
-  data[id.ajax_request] = true;
-  return data;
 }
 
 // Select example
