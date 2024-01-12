@@ -69,6 +69,7 @@ cd /media/user/app/third-party
 apt install cmake --yes
 cmake --install llvm/build
 cmake --install chrpp/build
+cp llvm/build/lib/cmake/cling/ClingTargets.cmake /usr/local/lib/cmake/cling
 ```
 
 ### Install required Debian packages
