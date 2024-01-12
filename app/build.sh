@@ -14,12 +14,7 @@ cd "$(dirname "$0")"
 source .env
 
 # Get conan home
-if [ -v OS_ENV ]
-then
-	CONAN_HOME="${PWD}/${CONAN_PATH}"
-else
-	CONAN_HOME=$(conan config home)
-fi
+CONAN_HOME="${PWD}/${CONAN_PATH}"
 
 # Get conan ctl
 DROGON_CTL="$(find "${CONAN_HOME}" -path '*/bin/drogon_ctl')"

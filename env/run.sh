@@ -30,7 +30,6 @@ podman container run \
 	-p $EXTERNAL_PORT:$INTERNAL_PORT \
 	--userns keep-id \
 	--volume "$PWD/app:/media/user/app" \
-	--env-file env/.env \
 	--sig-proxy=false \
 	$APP_NAME:latest \
 	./execute.sh

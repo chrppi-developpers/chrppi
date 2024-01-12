@@ -29,6 +29,5 @@ podman container run \
 	-p $EXTERNAL_PORT:$INTERNAL_PORT \
 	--userns keep-id \
 	--volume "$PWD/app:/media/user/app" \
-	--env-file env/.env \
 	--interactive --tty \
 	$APP_NAME:latest
