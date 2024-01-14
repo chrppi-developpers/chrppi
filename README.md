@@ -35,6 +35,7 @@ More informations on the [LERIA wiki](https://wiki.leria.univ-angers.fr/ua_membe
 ./build.sh
 exit
 sed --in-place --regexp-extended "s/(INTERNAL_PORT=).*/\180/" app/.env
+sed --in-place --regexp-extended "s/(BUILD_TYPE=).*/\1Release/" app/.env
 ```
 
 ### Upload the app to LERIA
