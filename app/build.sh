@@ -13,8 +13,13 @@ cd "$(dirname "$0")"
 # Get the app environment variables
 source .env
 
-# Get conan home
+# Initialize conan home
 CONAN_HOME="${PWD}/${CONAN_PATH}"
+if [ ! -f "${CONAN_HOME}/profiles/default" ]
+then
+	export CONAN_HOME
+	conan profile detect
+fi
 
 # Get conan ctl
 DROGON_CTL="$(find "${CONAN_HOME}" -path '*/bin/drogon_ctl')"
